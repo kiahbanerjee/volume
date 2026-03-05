@@ -96,24 +96,30 @@ for (let i = 0; i < PICKER_TOTAL; i++) {
 function updatePicker() {
     pickerItems.forEach((item, i) => {
         const dist = i - pickerIndex;
-        const angle = dist * 0.45; // radians
-        const scale = Math.cos(Math.min(Math.abs(angle), Math.PI / 2));
 
-        // y: arc path up/down from center
-        const y = PICKER_CENTER + Math.sin(angle) * 200 - 10;
-        // x: curve — center item is rightmost, others sweep left
+        // only show prev, current, next
+        if (Math.abs(dist) > 1) {
+            item.style.opacity = 0;
+            return;
+        }
+
+        const angle = dist * 0.9;
+        const scale = Math.cos(angle);
+
+        // y: arc — center at middle, prev curves up-left, next curves down-left
+        const y = PICKER_CENTER + Math.sin(angle) * 160 - 10;
+        // x: sweeps left as items move away
         const x = 16 + 80 * scale;
 
-        const size = Math.max(12, Math.round(80 * scale));
-        const grey = Math.round(180 * (1 - scale));
-        const color = dist === 0 ? '#000' : `rgb(${grey},${grey},${grey})`;
-        const opacity = scale < 0.1 ? 0 : 1;
+        const size = Math.max(14, Math.round(80 * scale));
+        const grey = dist === 0 ? 0 : 160;
+        const color = `rgb(${grey},${grey},${grey})`;
 
         item.style.top = y + 'px';
         item.style.left = x + 'px';
         item.style.fontSize = size + 'px';
         item.style.color = color;
-        item.style.opacity = opacity;
+        item.style.opacity = 1;
     });
 
     // scrollbar thumb
