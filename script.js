@@ -96,16 +96,9 @@ function updatePicker() {
 
         if (Math.abs(dist) > 1) return;
 
-        const angle = dist * 0.9;
-        const scale = Math.cos(angle);
-
-        const y = PICKER_CENTER + Math.sin(angle) * 100 - 10;
-        const x = 16 + 80 * scale;
-        const size = Math.max(14, Math.round(80 * scale));
-
-        item.style.top = y + 'px';
-        item.style.left = x + 'px';
-        item.style.fontSize = size + 'px';
+        const ITEM_GAP = 70;
+        item.style.top = (PICKER_CENTER + dist * ITEM_GAP) + 'px';
+        item.style.left = (dist === 0 ? 60 : 16) + 'px';
     });
 
   

@@ -99,15 +99,16 @@ font-style: italic;
 
 .picker-item {
     position: absolute;
-    left: 16px;
     font-weight: bold;
     line-height: 1;
+    font-size: 36px;
     color: rgb(160, 160, 160);
+    transform: translateY(-50%);
     transition: font-size 0.15s, color 0.15s, opacity 0.15s, top 0.15s, left 0.15s;
-    transform-origin: center;
 }
 
 .picker-item.current {
+    font-size: 72px;
     color: black;
 }
 
