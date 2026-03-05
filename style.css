@@ -11,6 +11,9 @@ body {
     gap: 40px;
     padding: 32px;
     min-height: 100vh;
+    font-family: "helvetica-lt-pro", sans-serif;
+font-weight: 400;
+font-style: italic;
 }
 
 
@@ -35,7 +38,7 @@ body {
 
 .circles {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 3px;
 }
 
@@ -45,11 +48,12 @@ body {
     border-radius: 50%;
     border: 1.5px solid black;
     background: white;
-    transition: background 0.1s;
+    transition: background 0.25s ease, transform 0.2s ease;
 }
 
 .circle.filled {
     background: black;
+    transform: scale(1.1);
 }
 
 
@@ -98,8 +102,17 @@ body {
     left: 16px;
     font-weight: bold;
     line-height: 1;
+    color: rgb(160, 160, 160);
     transition: font-size 0.15s, color 0.15s, opacity 0.15s, top 0.15s, left 0.15s;
-    transform-origin: left center;
+    transform-origin: center;
+}
+
+.picker-item.current {
+    color: black;
+}
+
+.picker-item.hidden {
+    opacity: 0;
 }
 
 #picker-track {
