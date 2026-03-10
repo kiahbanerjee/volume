@@ -102,7 +102,7 @@ font-style: normal;
     font-weight: bold;
     line-height: 1;
     font-size: 36px;
-    color: rgb(160, 160, 160);
+    color: rgb(255, 255, 255);
     transform: translateY(-50%);
     transition: font-size 0.15s, color 0.15s, opacity 0.15s, top 0.15s, left 0.15s;
 }
@@ -118,7 +118,7 @@ font-style: normal;
 
 #picker-track {
     width: 2px;
-    background: #ddd;
+    background: #ffffff;
     position: relative;
     border-radius: 1px;
 }
@@ -216,7 +216,7 @@ font-style: normal;
     box-sizing: border-box;
 }
 
-/* ---- catapult ---- */
+/* ---- catapult ----
 
 #catapult-widget {
     flex-shrink: 0;
@@ -237,4 +237,4 @@ font-style: normal;
 #cat-ball {
     fill: black;
     cursor: pointer;
-}
+} */

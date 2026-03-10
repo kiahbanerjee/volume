@@ -210,46 +210,46 @@ setInterval(snakeUpdate, 100);
 document.getElementById('snake-refresh').addEventListener('click', snakeReset);
 
 
-// ---- 6. CATAPULT ----
+// // ---- catapult ----
 
-const catSvg = document.getElementById('catapult-svg');
-const catBall = document.getElementById('cat-ball');
-const catArc = document.getElementById('cat-arc');
+// const catSvg = document.getElementById('catapult-svg');
+// const catBall = document.getElementById('cat-ball');
+// const catArc = document.getElementById('cat-arc');
 
-const CAT_LINE_X1 = 70, CAT_LINE_X2 = 300, CAT_LINE_Y = 95;
-let catBallX = 30, catBallY = 95;
-let catAnimId = null;
+// const CAT_LINE_X1 = 70, CAT_LINE_X2 = 300, CAT_LINE_Y = 95;
+// let catBallX = 30, catBallY = 95;
+// let catAnimId = null;
 
-catSvg.addEventListener('click', (e) => {
-    const rect = catSvg.getBoundingClientRect();
-    const clickX = (e.clientX - rect.left) * (320 / rect.width);
-    if (clickX < CAT_LINE_X1 || clickX > CAT_LINE_X2) return;
-    catLaunch(catBallX, catBallY, clickX, CAT_LINE_Y);
-});
+// catSvg.addEventListener('click', (e) => {
+//     const rect = catSvg.getBoundingClientRect();
+//     const clickX = (e.clientX - rect.left) * (320 / rect.width);
+//     if (clickX < CAT_LINE_X1 || clickX > CAT_LINE_X2) return;
+//     catLaunch(catBallX, catBallY, clickX, CAT_LINE_Y);
+// });
 
-function catLaunch(x0, y0, x1, y1) {
-    if (catAnimId) cancelAnimationFrame(catAnimId);
+// function catLaunch(x0, y0, x1, y1) {
+//     if (catAnimId) cancelAnimationFrame(catAnimId);
 
-    const ARC_H = 70;
-    const midX = (x0 + x1) / 2;
-    const ctrlY = Math.min(y0, y1) - ARC_H;
-    catArc.setAttribute('d', `M ${x0},${y0} Q ${midX},${ctrlY} ${x1},${y1}`);
+//     const ARC_H = 70;
+//     const midX = (x0 + x1) / 2;
+//     const ctrlY = Math.min(y0, y1) - ARC_H;
+//     catArc.setAttribute('d', `M ${x0},${y0} Q ${midX},${ctrlY} ${x1},${y1}`);
 
-    const duration = 500;
-    const start = performance.now();
+//     const duration = 500;
+//     const start = performance.now();
 
-    function step(now) {
-        const t = Math.min((now - start) / duration, 1);
-        const x = x0 + (x1 - x0) * t;
-        const y = y0 + (y1 - y0) * t - ARC_H * Math.sin(Math.PI * t);
-        catBall.setAttribute('cx', x);
-        catBall.setAttribute('cy', y);
-        if (t < 1) {
-            catAnimId = requestAnimationFrame(step);
-        } else {
-            catBallX = x1; catBallY = y1;
-            catAnimId = null;
-        }
-    }
-    catAnimId = requestAnimationFrame(step);
-}
+//     function step(now) {
+//         const t = Math.min((now - start) / duration, 1);
+//         const x = x0 + (x1 - x0) * t;
+//         const y = y0 + (y1 - y0) * t - ARC_H * Math.sin(Math.PI * t);
+//         catBall.setAttribute('cx', x);
+//         catBall.setAttribute('cy', y);
+//         if (t < 1) {
+//             catAnimId = requestAnimationFrame(step);
+//         } else {
+//             catBallX = x1; catBallY = y1;
+//             catAnimId = null;
+//         }
+//     }
+//     catAnimId = requestAnimationFrame(step);
+// }
