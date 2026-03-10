@@ -5,18 +5,19 @@
 }
 
 body {
-    background: white;
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    padding: 32px;
-    min-height: 100vh;
-    font-family: "helvetica-lt-pro", sans-serif;
+background: white;
+display: flex;
+align-items: center;
+gap: 40px;
+padding: 32px;
+min-height: 100vh;
+font-family: "helvetica-lt-pro", sans-serif;
 font-weight: 400;
 font-style: normal;
+}
 
 
-/* ---- 1. LINEAR CIRCLES ---- */
+/* ---- linear circles ---- */
 
 .slider {
     display: inline-flex;
@@ -56,7 +57,7 @@ font-style: normal;
 }
 
 
-/* ---- 2. GRID OF CIRCLES ---- */
+/* ---- gird of circles ---- */
 
 #grid {
     display: grid;
@@ -79,7 +80,7 @@ font-style: normal;
 }
 
 
-/* ---- 4. SCROLL PICKER ---- */
+/* ---- scroll picker ---- */
 
 #picker {
     display: flex;
@@ -133,7 +134,7 @@ font-style: normal;
 }
 
 
-/* ---- 3. RANDOM CIRCLES ---- */
+/* ---- random circles ---- */
 
 #box {
     position: relative;
@@ -169,4 +170,71 @@ font-style: normal;
     cursor: pointer;
     line-height: 1;
     padding: 0;
+}
+
+/* ---- snake game---- */
+
+.snakegame {
+    flex-shrink: 0;
+    position: relative;
+}
+
+#snake-refresh {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(17, 1fr);
+    grid-template-rows: repeat(17, 1fr);
+    border: 2px solid black;
+    width: 280px;
+    height: 280px;
+}
+
+.snake-cell {
+    background: white;
+}
+
+.snake-cell.snake {
+    background: black;
+    border-radius: 50%;
+}
+
+.snake-cell.food {
+    background: white;
+    border: 2px solid black;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+/* ---- catapult ---- */
+
+#catapult-widget {
+    flex-shrink: 0;
+    cursor: crosshair;
+}
+
+#cat-volume-line {
+    stroke: black;
+    stroke-width: 3;
+}
+
+#cat-arc {
+    fill: none;
+    stroke: #bbb;
+    stroke-width: 1.5;
+}
+
+#cat-ball {
+    fill: black;
+    cursor: pointer;
 }

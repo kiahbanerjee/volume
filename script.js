@@ -1,4 +1,4 @@
-// ---- 1. LINEAR CIRCLES ----
+// linear circles
 
 const TOTAL = 16;
 let count = 5;
@@ -20,7 +20,7 @@ document.getElementById('down').addEventListener('click', () => { count = Math.m
 document.getElementById('up').addEventListener('click', () => { count = Math.min(TOTAL, count + 1); update(); });
 
 
-// ---- 2. GRID OF CIRCLES ----
+// grid of circles
 
 const grid = document.getElementById('grid');
 for (let i = 0; i < 88; i++) {
@@ -31,7 +31,7 @@ for (let i = 0; i < 88; i++) {
 }
 
 
-// ---- 3. RANDOM CIRCLES ----
+// random cirles
 
 const DOT_SIZE = 36;
 
@@ -69,9 +69,9 @@ document.getElementById('refresh').addEventListener('click', spawn);
 spawn();
 
 
-// ---- 4. SCROLL PICKER ----
+// scroll picker
 
-const PICKER_TOTAL = 10;
+const PICKER_TOTAL = 11;
 const PICKER_CENTER = 140; 
 let pickerIndex = 0; 
 
@@ -82,7 +82,7 @@ const pickerItems = [];
 for (let i = 0; i < PICKER_TOTAL; i++) {
     const item = document.createElement('div');
     item.className = 'picker-item';
-    item.textContent = i + 1;
+    item.textContent = i;
     pickerList.appendChild(item);
     pickerItems.push(item);
 }
@@ -126,3 +126,130 @@ pickerList.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 updatePicker();
+
+// snake game
+
+const ROWS = 17;
+const COLS = 17;
+
+let snakeRow = 5, snakeCol = 5;
+let speedRow = 0, speedCol = 0;
+let snakeBody = [];
+let foodRow, foodCol;
+let snakeOver = false;
+
+const boardEl = document.getElementById('board');
+const snakeCells = [];
+for (let i = 0; i < ROWS * COLS; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'snake-cell';
+    boardEl.appendChild(cell);
+    snakeCells.push(cell);
+}
+
+function getCell(r, c) { return snakeCells[r * COLS + c]; }
+
+function snakePlaceFood() {
+    foodRow = Math.floor(Math.random() * ROWS);
+    foodCol = Math.floor(Math.random() * COLS);
+}
+
+function snakeRender() {
+    snakeCells.forEach(c => c.className = 'snake-cell');
+    getCell(foodRow, foodCol).classList.add('food');
+    getCell(snakeRow, snakeCol).classList.add('snake');
+    snakeBody.forEach(({ r, c }) => getCell(r, c).classList.add('snake'));
+}
+
+function snakeUpdate() {
+    if (snakeOver) return;
+
+    if (snakeRow === foodRow && snakeCol === foodCol) {
+        snakeBody.push({ r: snakeRow, c: snakeCol });
+        snakePlaceFood();
+    }
+
+    for (let i = snakeBody.length - 1; i > 0; i--) snakeBody[i] = { ...snakeBody[i - 1] };
+    if (snakeBody.length) snakeBody[0] = { r: snakeRow, c: snakeCol };
+
+    snakeRow += speedRow;
+    snakeCol += speedCol;
+
+    if (snakeRow < 0 || snakeRow >= ROWS || snakeCol < 0 || snakeCol >= COLS) {
+        snakeOver = true;
+        alert("Game Over");
+        return;
+    }
+
+    for (const { r, c } of snakeBody) {
+        if (snakeRow === r && snakeCol === c) { snakeOver = true; alert("Game Over"); return; }
+    }
+
+    snakeRender();
+}
+
+function changeDirection(e) {
+    if (e.code == "ArrowUp" && speedRow != 1)    { speedCol = 0;  speedRow = -1; }
+    else if (e.code == "ArrowDown" && speedRow != -1)  { speedCol = 0;  speedRow = 1;  }
+    else if (e.code == "ArrowLeft" && speedCol != 1)   { speedCol = -1; speedRow = 0;  }
+    else if (e.code == "ArrowRight" && speedCol != -1) { speedCol = 1;  speedRow = 0;  }
+}
+
+function snakeReset() {
+    snakeRow = 5; snakeCol = 5;
+    speedRow = 0; speedCol = 0;
+    snakeBody = [];
+    snakeOver = false;
+    snakePlaceFood();
+    snakeRender();
+}
+
+snakeReset();
+document.addEventListener("keyup", changeDirection);
+setInterval(snakeUpdate, 100);
+document.getElementById('snake-refresh').addEventListener('click', snakeReset);
+
+
+// ---- 6. CATAPULT ----
+
+const catSvg = document.getElementById('catapult-svg');
+const catBall = document.getElementById('cat-ball');
+const catArc = document.getElementById('cat-arc');
+
+const CAT_LINE_X1 = 70, CAT_LINE_X2 = 300, CAT_LINE_Y = 95;
+let catBallX = 30, catBallY = 95;
+let catAnimId = null;
+
+catSvg.addEventListener('click', (e) => {
+    const rect = catSvg.getBoundingClientRect();
+    const clickX = (e.clientX - rect.left) * (320 / rect.width);
+    if (clickX < CAT_LINE_X1 || clickX > CAT_LINE_X2) return;
+    catLaunch(catBallX, catBallY, clickX, CAT_LINE_Y);
+});
+
+function catLaunch(x0, y0, x1, y1) {
+    if (catAnimId) cancelAnimationFrame(catAnimId);
+
+    const ARC_H = 70;
+    const midX = (x0 + x1) / 2;
+    const ctrlY = Math.min(y0, y1) - ARC_H;
+    catArc.setAttribute('d', `M ${x0},${y0} Q ${midX},${ctrlY} ${x1},${y1}`);
+
+    const duration = 500;
+    const start = performance.now();
+
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const x = x0 + (x1 - x0) * t;
+        const y = y0 + (y1 - y0) * t - ARC_H * Math.sin(Math.PI * t);
+        catBall.setAttribute('cx', x);
+        catBall.setAttribute('cy', y);
+        if (t < 1) {
+            catAnimId = requestAnimationFrame(step);
+        } else {
+            catBallX = x1; catBallY = y1;
+            catAnimId = null;
+        }
+    }
+    catAnimId = requestAnimationFrame(step);
+}

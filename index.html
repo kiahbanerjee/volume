@@ -9,28 +9,43 @@
 </head>
 <body>
 
-    <!-- 1. LINEAR CIRCLES -->
+    <!-- linear circles -->
     <div class="slider">
         <button class="arrow" id="down">↓</button>
         <div class="circles" id="circles"></div>
         <button class="arrow" id="up">↑</button>
     </div>
 
-    <!-- 2. GRID OF CIRCLES -->
+    <!-- grid of circles-->
     <div id="grid"></div>
 
-    <!-- 3. RANDOM CIRCLES -->
+    <!-- random circles -->
     <div id="box">
         <button id="refresh">↻</button>
     </div>
 
-    <!-- 4. SCROLL PICKER -->
+    <!-- scroll picker -->
     <div id="picker">
         <div id="picker-list"></div>
         <div id="picker-track"><div id="picker-thumb"></div></div>
     </div>
 
+    <!-- snake game -->
+    <div class="snakegame">
+        <div id="board"></div>
+        <button id="snake-refresh">↻</button>
+    </div>
+
+    <!-- catapult -->
+    <div id="catapult-widget">
+        <svg id="catapult-svg" width="320" height="180">
+            <line id="cat-volume-line" x1="70" y1="95" x2="300" y2="95"/>
+            <path id="cat-arc" d=""/>
+            <circle id="cat-ball" cx="30" cy="95" r="11"/>
+        </svg>
+    </div>
+
     <script src="script.js"></script>
-    
+
 </body>
 </html>
