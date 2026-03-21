@@ -1,3 +1,12 @@
+const audio = document.getElementById('audio');
+function setVolume(v) { audio.volume = Math.max(0, Math.min(1, v)); }
+
+const playPauseBtn = document.getElementById('play-pause');
+playPauseBtn.addEventListener('click', () => {
+    if (audio.paused) { audio.play(); playPauseBtn.textContent = '⏸'; }
+    else { audio.pause(); playPauseBtn.textContent = '▶'; }
+});
+
 // linear circles
 
 const TOTAL = 16;
@@ -12,6 +21,7 @@ function update() {
     container.querySelectorAll('.circle').forEach((c, i) => {
         c.classList.toggle('filled', i < count);
     });
+    setVolume(count / TOTAL);
 }
 
 update();
@@ -26,7 +36,10 @@ const grid = document.getElementById('grid');
 for (let i = 0; i < 88; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.addEventListener('click', () => cell.classList.toggle('on'));
+    cell.addEventListener('click', () => {
+        cell.classList.toggle('on');
+        setVolume(grid.querySelectorAll('.cell.on').length / 88);
+    });
     grid.appendChild(cell);
 }
 
@@ -60,7 +73,10 @@ function spawn() {
         dot.textContent = i;
         dot.style.left = x + 'px';
         dot.style.top = y + 'px';
-        dot.addEventListener('click', () => dot.remove());
+        dot.addEventListener('click', () => {
+            dot.remove();
+            setVolume(document.getElementById('box').querySelectorAll('.dot').length / 10);
+        });
         box.appendChild(dot);
     }
 }
@@ -106,6 +122,7 @@ function updatePicker() {
     const thumbH = 40;
     const travel = trackH - thumbH;
     pickerThumb.style.top = Math.round((pickerIndex / (PICKER_TOTAL - 1)) * travel) + 'px';
+    setVolume(pickerIndex / (PICKER_TOTAL - 1));
 }
 
 let wheelAccum = 0;
@@ -136,7 +153,6 @@ let snakeRow = 5, snakeCol = 5;
 let speedRow = 0, speedCol = 0;
 let snakeBody = [];
 let foodRow, foodCol;
-let snakeOver = false;
 
 const boardEl = document.getElementById('board');
 const snakeCells = [];
@@ -162,28 +178,31 @@ function snakeRender() {
 }
 
 function snakeUpdate() {
-    if (snakeOver) return;
+    if (speedRow === 0 && speedCol === 0) return;
 
-    if (snakeRow === foodRow && snakeCol === foodCol) {
+    const newRow = snakeRow + speedRow;
+    const newCol = snakeCol + speedCol;
+
+    if (newRow < 0 || newRow >= ROWS || newCol < 0 || newCol >= COLS) {
+        speedRow = 0;
+        speedCol = 0;
+        if (snakeBody.length > 0) snakeBody.pop();
+        setVolume(snakeBody.length / 20);
+        snakeRender();
+        return;
+    }
+
+    if (newRow === foodRow && newCol === foodCol) {
         snakeBody.push({ r: snakeRow, c: snakeCol });
         snakePlaceFood();
+        setVolume(snakeBody.length / 20);
     }
 
     for (let i = snakeBody.length - 1; i > 0; i--) snakeBody[i] = { ...snakeBody[i - 1] };
     if (snakeBody.length) snakeBody[0] = { r: snakeRow, c: snakeCol };
 
-    snakeRow += speedRow;
-    snakeCol += speedCol;
-
-    if (snakeRow < 0 || snakeRow >= ROWS || snakeCol < 0 || snakeCol >= COLS) {
-        snakeOver = true;
-        alert("Game Over");
-        return;
-    }
-
-    for (const { r, c } of snakeBody) {
-        if (snakeRow === r && snakeCol === c) { snakeOver = true; alert("Game Over"); return; }
-    }
+    snakeRow = newRow;
+    snakeCol = newCol;
 
     snakeRender();
 }
@@ -199,7 +218,6 @@ function snakeReset() {
     snakeRow = 5; snakeCol = 5;
     speedRow = 0; speedCol = 0;
     snakeBody = [];
-    snakeOver = false;
     snakePlaceFood();
     snakeRender();
 }
@@ -210,46 +228,90 @@ setInterval(snakeUpdate, 100);
 document.getElementById('snake-refresh').addEventListener('click', snakeReset);
 
 
-// // ---- catapult ----
+// calculator
 
-// const catSvg = document.getElementById('catapult-svg');
-// const catBall = document.getElementById('cat-ball');
-// const catArc = document.getElementById('cat-arc');
+const calcDisplay = document.getElementById('calc-display');
+let calcExpr = '';
 
-// const CAT_LINE_X1 = 70, CAT_LINE_X2 = 300, CAT_LINE_Y = 95;
-// let catBallX = 30, catBallY = 95;
-// let catAnimId = null;
+document.getElementById('calc-buttons').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || !btn.dataset.val && !btn.dataset.action) return;
 
-// catSvg.addEventListener('click', (e) => {
-//     const rect = catSvg.getBoundingClientRect();
-//     const clickX = (e.clientX - rect.left) * (320 / rect.width);
-//     if (clickX < CAT_LINE_X1 || clickX > CAT_LINE_X2) return;
-//     catLaunch(catBallX, catBallY, clickX, CAT_LINE_Y);
-// });
+    if (btn.dataset.val === '+/-') {
+        calcExpr = calcExpr.startsWith('-') ? calcExpr.slice(1) : '-' + calcExpr;
+        calcDisplay.textContent = calcExpr || '0';
+    } else if (btn.dataset.val !== undefined) {
+        calcExpr += btn.dataset.val;
+        calcDisplay.textContent = calcExpr;
+    } else if (btn.dataset.action === 'clear') {
+        calcExpr = '';
+        calcDisplay.textContent = '0';
+    } else if (btn.dataset.action === 'back') {
+        calcExpr = calcExpr.slice(0, -1);
+        calcDisplay.textContent = calcExpr || '0';
+    } else if (btn.dataset.action === 'equals') {
+        try {
+            const result = eval(calcExpr.replace('÷', '/').replace('×', '*'));
+            setVolume(result);
+            calcDisplay.textContent = result.toFixed(2);
+            calcExpr = String(result);
+        } catch {
+            calcDisplay.textContent = 'Err';
+            calcExpr = '';
+        }
+    }
+});
 
-// function catLaunch(x0, y0, x1, y1) {
-//     if (catAnimId) cancelAnimationFrame(catAnimId);
 
-//     const ARC_H = 70;
-//     const midX = (x0 + x1) / 2;
-//     const ctrlY = Math.min(y0, y1) - ARC_H;
-//     catArc.setAttribute('d', `M ${x0},${y0} Q ${midX},${ctrlY} ${x1},${y1}`);
+// tube
 
-//     const duration = 500;
-//     const start = performance.now();
+const tube = document.getElementById('tube');
+const tubeFill = document.getElementById('tube-fill');
+let tubeDragging = false;
 
-//     function step(now) {
-//         const t = Math.min((now - start) / duration, 1);
-//         const x = x0 + (x1 - x0) * t;
-//         const y = y0 + (y1 - y0) * t - ARC_H * Math.sin(Math.PI * t);
-//         catBall.setAttribute('cx', x);
-//         catBall.setAttribute('cy', y);
-//         if (t < 1) {
-//             catAnimId = requestAnimationFrame(step);
-//         } else {
-//             catBallX = x1; catBallY = y1;
-//             catAnimId = null;
-//         }
-//     }
-//     catAnimId = requestAnimationFrame(step);
-// }
+function tubeSet(e) {
+    const rect = tube.getBoundingClientRect();
+    const v = 1 - (e.clientY - rect.top) / rect.height;
+    tubeFill.style.height = (Math.max(0, Math.min(1, v)) * 100) + '%';
+    setVolume(v);
+}
+
+tube.addEventListener('mousedown', (e) => { tubeDragging = true; tubeSet(e); });
+document.addEventListener('mousemove', (e) => { if (tubeDragging) tubeSet(e); });
+document.addEventListener('mouseup', () => tubeDragging = false);
+
+
+// spin wheel
+
+const spinWheel = document.getElementById('spin-wheel');
+const spinCenter = document.getElementById('spin-center');
+
+const SPIN_SEGMENTS = ['+1', '-2', '-1', '+1', '-2', 'x0', '-1', 'x3'];
+let spinDeg = 0;
+let spinBusy = false;
+
+function applySpinEffect(seg) {
+    let v = audio.volume;
+    if (seg === '+1') v += 0.2;
+    else if (seg === '-1') v -= 0.2;
+    else if (seg === '-2') v -= 0.4;
+    else if (seg === 'x3') v = Math.min(1, v * 3);
+    else if (seg === 'x0') v = 0;
+    setVolume(v);
+}
+
+spinCenter.addEventListener('click', () => {
+    if (spinBusy) return;
+    spinBusy = true;
+    const randomSeg = Math.floor(Math.random() * 8);
+    const segCenter = randomSeg * 45 + 22.5;
+    const extraSpins = (5 + Math.floor(Math.random() * 5)) * 360;
+    const adjustment = ((360 - segCenter) - (spinDeg % 360) + 360) % 360;
+    spinDeg = spinDeg + extraSpins + adjustment;
+    spinWheel.style.transform = `rotate(${spinDeg}deg)`;
+    setTimeout(() => {
+        applySpinEffect(SPIN_SEGMENTS[randomSeg]);
+        spinBusy = false;
+    }, 3000);
+});
+

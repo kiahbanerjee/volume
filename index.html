@@ -9,6 +9,9 @@
 </head>
 <body>
 
+    <audio id="audio" src="Mau%20P%20-%20The%20Less%20I%20Know%20The%20Better%20-%20Nervous%20Records.mp3" loop></audio>
+    <button id="play-pause">▶</button>
+
     <!-- linear circles -->
     <div class="slider">
         <button class="arrow" id="down">↓</button>
@@ -36,14 +39,69 @@
         <button id="snake-refresh">↻</button>
     </div>
 
-    <!-- catapult
-    <div id="catapult-widget">
-        <svg id="catapult-svg" width="320" height="180">
-            <line id="cat-volume-line" x1="70" y1="95" x2="300" y2="95"/>
-            <path id="cat-arc" d=""/>
-            <circle id="cat-ball" cx="30" cy="95" r="11"/>
-        </svg> -->
+    <!-- bottom row -->
+    <div id="bottom-row">
+
+        <!-- tube -->
+        <div id="tube">
+            <div id="tube-fill"></div>
+        </div>
+
+        <!-- calculator -->
+        <div id="calc">
+            <div id="calc-display">0</div>
+            <div id="calc-buttons">
+                <button data-action="back" class="calc-fn">⌫</button>
+                <button data-action="clear" class="calc-fn">AC</button>
+                <button data-val="%" class="calc-fn">%</button>
+                <button data-val="÷" class="calc-op">÷</button>
+                <button data-val="7">7</button>
+                <button data-val="8">8</button>
+                <button data-val="9">9</button>
+                <button data-val="×" class="calc-op">×</button>
+                <button data-val="4">4</button>
+                <button data-val="5">5</button>
+                <button data-val="6">6</button>
+                <button data-val="-" class="calc-op">-</button>
+                <button data-val="1">1</button>
+                <button data-val="2">2</button>
+                <button data-val="3">3</button>
+                <button data-val="+" class="calc-op">+</button>
+                <button data-val="+/-">+/-</button>
+                <button data-val="0">0</button>
+                <button data-val=".">.</button>
+                <button data-action="equals" class="calc-op">=</button>
+            </div>
+        </div>
+
+        <!-- spin wheel -->
+        <div id="spin-widget">
+        <svg id="spin-svg" viewBox="0 0 300 300" width="280" height="280">
+            <polygon id="spin-pointer" points="143,8 157,8 150,22"/>
+            <g id="spin-wheel">
+                <path d="M150,150 L150,20 A130,130 0 0,1 241.9,58.1 Z"/>
+                <path d="M150,150 L241.9,58.1 A130,130 0 0,1 280,150 Z"/>
+                <path d="M150,150 L280,150 A130,130 0 0,1 241.9,241.9 Z"/>
+                <path d="M150,150 L241.9,241.9 A130,130 0 0,1 150,280 Z"/>
+                <path d="M150,150 L150,280 A130,130 0 0,1 58.1,241.9 Z"/>
+                <path d="M150,150 L58.1,241.9 A130,130 0 0,1 20,150 Z"/>
+                <path d="M150,150 L20,150 A130,130 0 0,1 58.1,58.1 Z"/>
+                <path d="M150,150 L58.1,58.1 A130,130 0 0,1 150,20 Z"/>
+                <text x="180.6" y="76.1">+1</text>
+                <text x="223.9" y="119.4">-2</text>
+                <text x="223.9" y="180.6">-1</text>
+                <text x="180.6" y="223.9">+1</text>
+                <text x="119.4" y="223.9">-2</text>
+                <text x="76.1" y="180.6">x0</text>
+                <text x="76.1" y="119.4">-1</text>
+                <text x="119.4" y="76.1">x3</text>
+            </g>
+            <circle id="spin-center" cx="150" cy="150" r="30"/>
+            <text id="spin-label" x="150" y="150">SPIN</text>
+        </svg>
     </div>
+
+    </div><!-- end bottom-row -->
 
     <script src="script.js"></script>
 
