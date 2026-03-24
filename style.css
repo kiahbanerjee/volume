@@ -218,6 +218,45 @@ font-style: normal;
 }
 
 
+/* ---- rotary dial ---- */
+
+#rotary-svg {
+    flex-shrink: 0;
+    cursor: default;
+}
+
+#rotary-disk {
+    transform-origin: 140px 140px;
+}
+
+.rotary-digit {
+    cursor: pointer;
+}
+
+.rotary-hole {
+    fill: white;
+    stroke: black;
+    stroke-width: 2;
+}
+
+.rotary-digit.selected .rotary-hole {
+    fill: black;
+}
+
+.rotary-label {
+    fill: black;
+    font-size: 13px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+}
+
+.rotary-digit.selected .rotary-label {
+    fill: white;
+}
+
+
 /* ---- snake game---- */
 
 .snakegame {
@@ -378,6 +417,222 @@ font-style: normal;
     border-radius: 50%;
     background: black;
     pointer-events: none;
+}
+
+
+/* ---- memory game ---- */
+
+#memory-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+#memory-game {
+    flex-shrink: 0;
+}
+
+#memory-refresh {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    color: black;
+}
+
+#memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 68px);
+    grid-template-rows: repeat(3, 88px);
+    gap: 8px;
+}
+
+.mem-card {
+    border-radius: 16px;
+    background: black;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.mem-card.flipped {
+    background: white;
+    color: black;
+    border: 2px solid black;
+}
+
+.mem-card.matched {
+    background: white;
+    color: black;
+    border: 2px solid black;
+}
+
+
+/* ---- 2048 ---- */
+
+#game-2048 {
+    border: 2px solid black;
+    border-radius: 16px;
+    padding: 10px;
+    flex-shrink: 0;
+}
+
+#grid-2048 {
+    position: relative;
+    width: 272px;
+    height: 272px;
+}
+
+.bg-cell-2048 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 62px;
+    height: 62px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+.tile-2048 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 62px;
+    height: 62px;
+    border-radius: 10px;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    transition: transform 0.12s ease;
+    z-index: 1;
+}
+
+.tile-2048.negative {
+    background: white;
+    color: black;
+    border: 2px solid black;
+}
+
+
+/* ---- catch game ---- */
+
+#third-row {
+    flex-basis: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+#catch-box {
+    width: 280px;
+    height: 280px;
+    border: 2px solid black;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#catch-bucket {
+    position: absolute;
+    bottom: 10px;
+    width: 70px;
+    height: 36px;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.catch-ball {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid black;
+    background: white;
+}
+
+.catch-ball.filled {
+    background: black;
+}
+
+#catch-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#catch-scrollbar {
+    width: 280px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 1px;
+    position: relative;
+    cursor: pointer;
+}
+
+#catch-thumb {
+    position: absolute;
+    top: 0;
+    height: 2px;
+    width: 60px;
+    background: black;
+    border-radius: 1px;
+    cursor: grab;
+}
+
+#catch-thumb:active {
+    cursor: grabbing;
+}
+
+
+
+/* ---- slot machine ---- */
+
+#slot-machine {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#slot-reels {
+    display: flex;
+    gap: 8px;
+}
+
+.slot-reel {
+    width: 90px;
+    height: 220px;
+    border: 2px solid black;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slot-num {
+    font-size: 72px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+#slot-lever-svg {
+    cursor: pointer;
+}
+
+#slot-lever-arm {
+    transform-origin: 20px 205px;
 }
 
 

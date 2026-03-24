@@ -1,10 +1,21 @@
 const audio = document.getElementById('audio');
 function setVolume(v) { audio.volume = Math.max(0, Math.min(1, v)); }
 
+if ('mediaSession' in navigator) {
+    ['play','pause','seekbackward','seekforward','previoustrack','nexttrack'].forEach(action => {
+        try { navigator.mediaSession.setActionHandler(action, null); } catch {}
+    });
+}
+
 const playPauseBtn = document.getElementById('play-pause');
+
+audio.addEventListener('pause', () => {
+    if (!audio.ended && !playPauseBtn._userPaused) audio.play();
+});
+
 playPauseBtn.addEventListener('click', () => {
-    if (audio.paused) { audio.play(); playPauseBtn.textContent = '⏸'; }
-    else { audio.pause(); playPauseBtn.textContent = '▶'; }
+    if (audio.paused) { playPauseBtn._userPaused = false; audio.play(); playPauseBtn.textContent = '⏸'; }
+    else { playPauseBtn._userPaused = true; audio.pause(); playPauseBtn.textContent = '▶'; }
 });
 
 // linear circles
@@ -143,6 +154,114 @@ pickerList.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 updatePicker();
+
+// rotary dial
+
+const rotaryDisk = document.getElementById('rotary-disk');
+const DIAL_NUMS = [1,2,3,4,5,6,7,8,9,0];
+const DIAL_ANGLES = [120, 90, 60, 30, 0, 330, 300, 270, 240, 210];
+let rotarySelected = null;
+let rotaryAnimating = false;
+
+DIAL_NUMS.forEach((num, i) => {
+    const a = DIAL_ANGLES[i] * Math.PI / 180;
+    const cx = 140 + 88 * Math.sin(a);
+    const cy = 140 - 88 * Math.cos(a);
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'rotary-digit');
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', 18);
+    circle.setAttribute('class', 'rotary-hole');
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', cx);
+    text.setAttribute('y', cy);
+    text.setAttribute('class', 'rotary-label');
+    text.textContent = num;
+
+    g.appendChild(circle);
+    g.appendChild(text);
+
+    g.addEventListener('click', () => {
+        if (rotaryAnimating) return;
+        rotaryAnimating = true;
+
+        if (rotarySelected) rotarySelected.classList.remove('selected');
+        g.classList.add('selected');
+        rotarySelected = g;
+        setVolume(num === 0 ? 1.0 : num / 10);
+
+        // Rotate clockwise to stop: each digit n rotates (n*30 - 15) degrees
+        const rotation = (num === 0 ? 10 : num) * 30 - 15;
+
+        // Forward: slow ease-in (finger pushing)
+        rotaryDisk.style.transition = 'transform 0.5s ease-in';
+        rotaryDisk.style.transform = `rotate(${rotation}deg)`;
+
+        // Spring back after forward completes
+        setTimeout(() => {
+            rotaryDisk.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.4, 1)';
+            rotaryDisk.style.transform = 'rotate(0deg)';
+            setTimeout(() => { rotaryAnimating = false; }, 550);
+        }, 520);
+    });
+
+    rotaryDisk.appendChild(g);
+});
+
+// slot machine
+
+const slotNums = Array.from(document.querySelectorAll('.slot-num'));
+const slotLeverArm = document.getElementById('slot-lever-arm');
+const slotHandle = document.getElementById('slot-handle');
+let slotSpinning = false;
+
+slotHandle.addEventListener('click', () => {
+    if (slotSpinning) return;
+    slotSpinning = true;
+
+    // Pull lever down
+    slotLeverArm.style.transition = 'transform 0.2s ease-in';
+    slotLeverArm.style.transform = 'rotate(38deg)';
+
+    // Spring back
+    setTimeout(() => {
+        slotLeverArm.style.transition = 'transform 0.45s cubic-bezier(0.2, 0.8, 0.35, 1)';
+        slotLeverArm.style.transform = 'rotate(0deg)';
+    }, 250);
+
+    // Spin all reels
+    const intervals = [null, null, null];
+    const results = [0, 0, 0];
+    slotNums.forEach((num, i) => {
+        intervals[i] = setInterval(() => {
+            num.textContent = Math.floor(Math.random() * 9) + 1;
+        }, 80);
+    });
+
+    // Stop reels one by one; reels 2 & 3 have 50% chance of matching reel 1
+    [900, 1300, 1700].forEach((delay, i) => {
+        setTimeout(() => {
+            clearInterval(intervals[i]);
+            if (i === 0) {
+                results[0] = Math.floor(Math.random() * 9) + 1;
+            } else {
+                results[i] = Math.random() < 0.5 ? results[0] : Math.floor(Math.random() * 9) + 1;
+            }
+            slotNums[i].textContent = results[i];
+            if (i === 2) {
+                if (results[0] === results[1] && results[1] === results[2]) {
+                    setVolume(results[0] / 9);
+                }
+                slotSpinning = false;
+            }
+        }, delay);
+    });
+});
 
 // snake game
 
@@ -331,6 +450,280 @@ document.addEventListener('mousemove', (e) => {
 document.addEventListener('mouseup', () => ccDragging = false);
 
 ccSetDeg(0);
+
+
+// 2048
+
+const CELL2 = 70;
+let board2048 = Array.from({length:4}, () => Array(4).fill(null));
+const grid2048 = document.getElementById('grid-2048');
+const tileEls2048 = new Map();
+let tileIdCtr2048 = 0;
+let animating2048 = false;
+
+for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+    const bg = document.createElement('div');
+    bg.className = 'bg-cell-2048';
+    bg.style.transform = `translate(${c*CELL2}px,${r*CELL2}px)`;
+    grid2048.appendChild(bg);
+}
+
+function spawnTile2048(row, col, value) {
+    const id = tileIdCtr2048++;
+    const el = document.createElement('div');
+    el.className = 'tile-2048';
+    el.textContent = value;
+    el.style.transform = `translate(${col*CELL2}px,${row*CELL2}px)`;
+    grid2048.appendChild(el);
+    tileEls2048.set(id, el);
+    board2048[row][col] = {id, value};
+}
+
+function addRandTile2048() {
+    const empty = [];
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (!board2048[r][c]) empty.push([r,c]);
+    if (!empty.length) return;
+    const [r,c] = empty[Math.floor(Math.random()*empty.length)];
+    spawnTile2048(r, c, 2);
+}
+
+function slideRow2048(row) {
+    const tiles = row.filter(t => t);
+    const result = [];
+    let i = 0;
+    while (i < tiles.length) {
+        if (i+1 < tiles.length && tiles[i].value === tiles[i+1].value)
+            result.push({...tiles[i], value: tiles[i].value*2, mergedId: tiles[i+1].id}), i+=2;
+        else result.push({...tiles[i]}), i++;
+    }
+    while (result.length < 4) result.push(null);
+    return result;
+}
+
+function move2048(dir) {
+    if (animating2048) return;
+    const newBoard = Array.from({length:4}, () => Array(4).fill(null));
+    const toMove = [], toMerge = [];
+
+    for (let i = 0; i < 4; i++) {
+        let line, coord;
+        if (dir==='left')  { line = board2048[i];                        coord = j=>[i,j]; }
+        if (dir==='right') { line = [...board2048[i]].reverse();         coord = j=>[i,3-j]; }
+        if (dir==='up')    { line = board2048.map(r=>r[i]);             coord = j=>[j,i]; }
+        if (dir==='down')  { line = board2048.map(r=>r[i]).reverse();   coord = j=>[3-j,i]; }
+
+        slideRow2048(line).forEach((t, j) => {
+            if (!t) return;
+            const [r,c] = coord(j);
+            newBoard[r][c] = {id:t.id, value:t.value};
+            toMove.push({id:t.id, r, c});
+            if (t.mergedId !== undefined) {
+                toMove.push({id:t.mergedId, r, c});
+                toMerge.push({removeId:t.mergedId, survivorId:t.id, value:t.value});
+            }
+        });
+    }
+
+    let moved = toMerge.length > 0;
+    if (!moved) for (let r=0;r<4;r++) for (let c=0;c<4;c++) {
+        const a=board2048[r][c], b=newBoard[r][c];
+        if ((!a)!==(!b) || (a&&b&&a.id!==b.id)) { moved=true; break; }
+    }
+    if (!moved) return;
+
+    animating2048 = true;
+    board2048 = newBoard;
+
+    toMove.forEach(({id,r,c}) => {
+        const el = tileEls2048.get(id);
+        if (el) el.style.transform = `translate(${c*CELL2}px,${r*CELL2}px)`;
+    });
+
+    setTimeout(() => {
+        toMerge.forEach(({removeId,survivorId,value}) => {
+            tileEls2048.get(removeId)?.remove();
+            tileEls2048.delete(removeId);
+            const el = tileEls2048.get(survivorId);
+            if (el) el.textContent = value;
+        });
+        addRandTile2048();
+        let max = 0;
+        for (let r=0;r<4;r++) for (let c=0;c<4;c++) if (board2048[r][c]) max=Math.max(max,board2048[r][c].value);
+        if (max > 0) setVolume(Math.log2(max)/11);
+        animating2048 = false;
+    }, 120);
+}
+
+document.addEventListener('keydown', (e) => {
+    const map = {ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down'};
+    if (map[e.key]) { e.preventDefault(); e.stopPropagation(); move2048(map[e.key]); }
+}, { capture: true });
+
+addRandTile2048(); addRandTile2048();
+
+
+// memory game
+
+const memGrid = document.getElementById('memory-grid');
+const memCards = [];
+let memValues = [], memFlipped = [], memMatched = [], memLocked = false;
+
+function memNewPairs() {
+    const pool = [1,2,3,4,5,6,7,8,9];
+    const picked = pool.sort(() => Math.random()-0.5).slice(0,6);
+    return [...picked, ...picked].sort(() => Math.random()-0.5);
+}
+
+function memInit() {
+    memValues = memNewPairs();
+    memFlipped = Array(12).fill(false);
+    memMatched = Array(12).fill(false);
+    memLocked = false;
+    memCards.forEach((c, i) => { c.textContent = memValues[i]; c.className = 'mem-card'; });
+}
+
+function memReshuffleUnmatched() {
+    const unmatched = memCards.map((_,i) => i).filter(i => !memMatched[i]);
+    const vals = unmatched.map(i => memValues[i]).sort(() => Math.random()-0.5);
+    unmatched.forEach((i, j) => { memValues[i] = vals[j]; memCards[i].textContent = vals[j]; });
+}
+
+for (let i = 0; i < 12; i++) {
+    const card = document.createElement('div');
+    card.className = 'mem-card';
+    card.addEventListener('click', () => {
+        if (memLocked || memFlipped[i] || memMatched[i]) return;
+        memFlipped[i] = true;
+        card.classList.add('flipped');
+
+        const open = memFlipped.map((f,idx) => f && !memMatched[idx] ? idx : -1).filter(x => x >= 0);
+        if (open.length !== 2) return;
+
+        const [a, b] = open;
+        memLocked = true;
+
+        if (memValues[a] === memValues[b]) {
+            memMatched[a] = memMatched[b] = true;
+            memCards[a].classList.add('matched');
+            memCards[b].classList.add('matched');
+            memFlipped[a] = memFlipped[b] = false;
+            setVolume(Math.min(1, audio.volume + 1/6));
+            memLocked = false;
+            setTimeout(memReshuffleUnmatched, 600);
+        } else {
+            setTimeout(() => {
+                memCards[a].classList.remove('flipped');
+                memCards[b].classList.remove('flipped');
+                memFlipped[a] = memFlipped[b] = false;
+                setVolume(Math.max(0, audio.volume - 1/6));
+                memLocked = false;
+            }, 800);
+        }
+    });
+    memGrid.appendChild(card);
+    memCards.push(card);
+}
+
+memInit();
+document.getElementById('memory-refresh').addEventListener('click', memInit);
+
+
+// catch game
+
+const catchBox = document.getElementById('catch-box');
+const catchBucket = document.getElementById('catch-bucket');
+const CATCH_W = 280, CATCH_H = 280;
+const BALL_D = 22, BUCKET_W = 70, BUCKET_H = 36;
+const BUCKET_BOTTOM = 10;
+let bucketX = (CATCH_W - BUCKET_W) / 2;
+let catchBalls = [];
+
+const catchScrollbar = document.getElementById('catch-scrollbar');
+const catchThumb = document.getElementById('catch-thumb');
+const THUMB_W = 70;
+let catchThumbDragging = false;
+let catchThumbStartX = 0;
+let catchThumbStartBucket = 0;
+
+function updateBucket() {
+    bucketX = Math.max(0, Math.min(CATCH_W - BUCKET_W, bucketX));
+    catchBucket.style.left = bucketX + 'px';
+    catchThumb.style.left = (bucketX / (CATCH_W - BUCKET_W) * (280 - THUMB_W)) + 'px';
+}
+updateBucket();
+
+catchBox.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    bucketX -= e.deltaX * 0.4;
+    updateBucket();
+    if (!catchRunning) catchStart();
+}, { passive: false });
+
+catchThumb.addEventListener('mousedown', (e) => {
+    catchThumbDragging = true;
+    catchThumbStartX = e.clientX;
+    catchThumbStartBucket = bucketX;
+    e.preventDefault();
+});
+document.addEventListener('mousemove', (e) => {
+    if (!catchThumbDragging) return;
+    const dx = e.clientX - catchThumbStartX;
+    bucketX = catchThumbStartBucket + dx * (CATCH_W - BUCKET_W) / (280 - THUMB_W);
+    updateBucket();
+});
+document.addEventListener('mouseup', () => catchThumbDragging = false);
+
+function spawnCatchBall() {
+    const filled = Math.random() > 0.4;
+    const x = Math.random() * (CATCH_W - BALL_D);
+    const el = document.createElement('div');
+    el.className = 'catch-ball' + (filled ? ' filled' : '');
+    el.style.left = x + 'px';
+    el.style.top = '-22px';
+    catchBox.appendChild(el);
+    catchBalls.push({ el, x, y: -22, filled });
+}
+
+function catchUpdate() {
+    const bucketTop = CATCH_H - BUCKET_BOTTOM - BUCKET_H;
+    catchBalls = catchBalls.filter(ball => {
+        ball.y += 1.5;
+        ball.el.style.top = ball.y + 'px';
+
+        if (ball.y + BALL_D >= bucketTop && ball.y <= bucketTop + BUCKET_H) {
+            if (ball.x + BALL_D >= bucketX && ball.x <= bucketX + BUCKET_W) {
+                setVolume(audio.volume + (ball.filled ? 0.1 : -0.1));
+                ball.el.remove();
+                return false;
+            }
+        }
+        if (ball.y > CATCH_H) { ball.el.remove(); return false; }
+        return true;
+    });
+    if (catchRunning) requestAnimationFrame(catchUpdate);
+}
+
+let catchRunning = false;
+let catchSpawnInterval = null;
+
+function catchStart() {
+    if (catchRunning) return;
+    catchRunning = true;
+    catchSpawnInterval = setInterval(spawnCatchBall, 1200);
+    catchUpdate();
+}
+
+function catchStop() {
+    catchRunning = false;
+    clearInterval(catchSpawnInterval);
+    catchSpawnInterval = null;
+    catchBalls.forEach(b => b.el.remove());
+    catchBalls = [];
+}
+
+document.addEventListener('click', (e) => {
+    if (catchRunning && !catchBox.contains(e.target)) catchStop();
+});
 
 
 // scale
