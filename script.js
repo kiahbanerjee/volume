@@ -213,6 +213,157 @@ DIAL_NUMS.forEach((num, i) => {
     rotaryDisk.appendChild(g);
 });
 
+// knob
+
+const knobSvg = document.getElementById('knob-svg');
+const knobBody = document.getElementById('knob-body');
+const knobGroup = document.getElementById('knob-group');
+let knobDragging = false;
+let knobPrevAngle = null;
+
+function setKnobAngle(vol) {
+    knobGroup.style.transform = `rotate(${320 + vol * 80}deg)`;
+}
+
+function knobGetAngle(e) {
+    const rect = knobSvg.getBoundingClientRect();
+    const dx = (e.clientX - rect.left) * (280 / rect.width) - 140;
+    const dy = (e.clientY - rect.top) * (280 / rect.height) - 155;
+    let angle = Math.atan2(dx, -dy) * 180 / Math.PI;
+    return angle < 0 ? angle + 360 : angle;
+}
+
+knobBody.addEventListener('mousedown', (e) => {
+    knobDragging = true;
+    knobPrevAngle = knobGetAngle(e);
+    e.preventDefault();
+});
+window.addEventListener('mousemove', (e) => {
+    if (!knobDragging) return;
+    const angle = knobGetAngle(e);
+    let delta = angle - knobPrevAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    knobPrevAngle = angle;
+    const vol = Math.max(0, Math.min(1, audio.volume + delta / 80));
+    setKnobAngle(vol);
+    setVolume(vol);
+});
+window.addEventListener('mouseup', () => { knobDragging = false; knobPrevAngle = null; });
+
+setKnobAngle(0);
+
+// dice
+
+const DICE_PATTERNS = {
+    1: ['dot-c'],
+    2: ['dot-tr', 'dot-bl'],
+    3: ['dot-tr', 'dot-c', 'dot-bl'],
+    4: ['dot-tl', 'dot-tr', 'dot-bl', 'dot-br'],
+    5: ['dot-tl', 'dot-tr', 'dot-c', 'dot-bl', 'dot-br'],
+    6: ['dot-tl', 'dot-tr', 'dot-ml', 'dot-mr', 'dot-bl', 'dot-br']
+};
+
+function showDice(n) {
+    document.querySelectorAll('.die-dot').forEach(d => d.classList.remove('show'));
+    DICE_PATTERNS[n].forEach(id => document.getElementById(id).classList.add('show'));
+}
+
+const diceSvg = document.getElementById('dice-svg');
+let diceRolling = false;
+showDice(1);
+
+diceSvg.addEventListener('click', () => {
+    if (diceRolling) return;
+    diceRolling = true;
+    diceSvg.classList.add('rolling');
+
+    const delays = [60,60,70,70,80,90,100,120,140,160,190,220];
+    let t = 0;
+    delays.forEach((d, i) => {
+        t += d;
+        setTimeout(() => {
+            showDice(Math.floor(Math.random() * 6) + 1);
+            if (i === delays.length - 1) {
+                const result = Math.floor(Math.random() * 6) + 1;
+                showDice(result);
+                setVolume(result / 6);
+                diceSvg.classList.remove('rolling');
+                diceRolling = false;
+            }
+        }, t);
+    });
+});
+
+// low med high
+
+document.querySelectorAll('.lmh-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.lmh-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        setVolume(parseFloat(btn.dataset.vol));
+    });
+});
+
+// dropdown
+
+const volSelected = document.getElementById('vol-selected');
+const volOptions = document.getElementById('vol-options');
+const volOptionsWrap = document.getElementById('vol-options-wrap');
+const volScrollThumb = document.getElementById('vol-scroll-thumb');
+
+for (let v = 0; v <= 100; v += 10) {
+    const div = document.createElement('div');
+    div.className = 'vol-option';
+    div.textContent = v + '%';
+    div.addEventListener('click', () => {
+        volSelected.childNodes[0].textContent = v + '% ';
+        volOptionsWrap.classList.remove('open');
+        setVolume(v / 100);
+    });
+    volOptions.appendChild(div);
+}
+
+function updateVolThumb() {
+    const ratio = volOptions.scrollTop / (volOptions.scrollHeight - volOptions.clientHeight);
+    const trackH = volOptionsWrap.clientHeight;
+    const thumbH = Math.max(20, trackH * (volOptions.clientHeight / volOptions.scrollHeight));
+    volScrollThumb.style.height = thumbH + 'px';
+    volScrollThumb.style.top = ratio * (trackH - thumbH) + 'px';
+}
+
+volOptions.addEventListener('scroll', updateVolThumb);
+
+volSelected.addEventListener('click', () => {
+    volOptionsWrap.classList.toggle('open');
+    if (volOptionsWrap.classList.contains('open')) updateVolThumb();
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#vol-dropdown')) volOptionsWrap.classList.remove('open');
+});
+
+// type box
+
+const typeInput = document.getElementById('type-input');
+const typeError = document.getElementById('type-error');
+
+typeInput.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const val = parseInt(typeInput.value);
+    if (isNaN(val) || val < 1 || val > 100) {
+        typeInput.classList.remove('error');
+        void typeInput.offsetWidth; // restart animation
+        typeInput.classList.add('error');
+        typeError.classList.add('visible');
+        setTimeout(() => { typeInput.classList.remove('error'); typeError.classList.remove('visible'); }, 600);
+    } else {
+        setVolume(val / 100);
+        typeInput.value = '';
+        typeError.classList.remove('visible');
+    }
+});
+
 // slot machine
 
 const slotNums = Array.from(document.querySelectorAll('.slot-num'));

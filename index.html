@@ -159,20 +159,79 @@
 
     </div><!-- end third-row -->
 
-    <!-- slot machine -->
-    <div id="slot-machine">
-        <div id="slot-reels">
-            <div class="slot-reel"><span class="slot-num">?</span></div>
-            <div class="slot-reel"><span class="slot-num">?</span></div>
-            <div class="slot-reel"><span class="slot-num">?</span></div>
+    <!-- fourth row -->
+    <div id="fourth-row">
+
+        <!-- slot machine -->
+        <div id="slot-machine">
+            <div id="slot-reels">
+                <div class="slot-reel"><span class="slot-num">?</span></div>
+                <div class="slot-reel"><span class="slot-num">?</span></div>
+                <div class="slot-reel"><span class="slot-num">?</span></div>
+            </div>
+            <svg id="slot-lever-svg" viewBox="0 0 60 220" width="60" height="220">
+                <g id="slot-lever-arm">
+                    <line x1="20" y1="205" x2="42" y2="44" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle id="slot-handle" cx="44" cy="28" r="16" fill="black"/>
+                </g>
+            </svg>
         </div>
-        <svg id="slot-lever-svg" viewBox="0 0 60 220" width="60" height="220">
-            <g id="slot-lever-arm">
-                <line x1="20" y1="205" x2="42" y2="44" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-                <circle id="slot-handle" cx="44" cy="28" r="16" fill="black"/>
+
+        <!-- type box -->
+        <div id="type-box">
+            <input id="type-input" type="text" placeholder="1 – 100" autocomplete="off"/>
+            <span id="type-error">enter a number 1–100</span>
+        </div>
+
+        <!-- knob -->
+        <svg id="knob-svg" viewBox="0 0 280 280" width="280" height="280">
+            <circle class="knob-dot" cx="71"  cy="72"  r="5"/>
+            <circle class="knob-dot" cx="92"  cy="55"  r="8"/>
+            <circle class="knob-dot" cx="125" cy="41"  r="12"/>
+            <circle class="knob-dot" cx="169" cy="40"  r="16"/>
+            <circle class="knob-dot" cx="220" cy="60"  r="21"/>
+            <circle id="knob-body" cx="140" cy="155" r="95"/>
+            <g id="knob-group">
+                <polygon id="knob-pointer" points="128,92 152,92 140,78"/>
             </g>
         </svg>
-    </div>
+
+        <!-- low med high -->
+        <div id="lmh">
+            <button class="lmh-btn" data-vol="0.25">low</button>
+            <button class="lmh-btn" data-vol="0.55">med</button>
+            <button class="lmh-btn" data-vol="1">high</button>
+        </div>
+
+    </div><!-- end fourth-row -->
+
+    <!-- fifth row -->
+    <div id="fifth-row">
+
+        <!-- dropdown -->
+        <div id="dropdown-box">
+            <div id="vol-dropdown">
+                <div id="vol-selected">Select <span id="vol-chevron">∨</span></div>
+                <div id="vol-options-wrap">
+                    <div id="vol-options"></div>
+                    <div id="vol-scroll-track"><div id="vol-scroll-thumb"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- dice -->
+        <svg id="dice-svg" viewBox="0 0 180 180" width="180" height="180">
+            <rect x="2" y="2" width="176" height="176" rx="12" fill="white" stroke="black" stroke-width="2"/>
+            <circle class="die-dot" id="dot-tl" cx="45"  cy="45"  r="16"/>
+            <circle class="die-dot" id="dot-tr" cx="135" cy="45"  r="16"/>
+            <circle class="die-dot" id="dot-ml" cx="45"  cy="90"  r="16"/>
+            <circle class="die-dot" id="dot-c"  cx="90"  cy="90"  r="16"/>
+            <circle class="die-dot" id="dot-mr" cx="135" cy="90"  r="16"/>
+            <circle class="die-dot" id="dot-bl" cx="45"  cy="135" r="16"/>
+            <circle class="die-dot" id="dot-br" cx="135" cy="135" r="16"/>
+        </svg>
+
+    </div><!-- end fifth-row -->
 
     <script src="script.js"></script>
 

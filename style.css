@@ -598,6 +598,25 @@ font-style: normal;
 
 
 
+/* ---- fourth row ---- */
+
+#fourth-row {
+    flex-basis: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+/* ---- fifth row ---- */
+
+#fifth-row {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+
 /* ---- slot machine ---- */
 
 #slot-machine {
@@ -633,6 +652,93 @@ font-style: normal;
 
 #slot-lever-arm {
     transform-origin: 20px 205px;
+}
+
+
+/* ---- knob ---- */
+
+#knob-svg {
+    flex-shrink: 0;
+}
+
+.knob-dot {
+    fill: black;
+}
+
+#knob-body {
+    fill: white;
+    stroke: black;
+    stroke-width: 2;
+    cursor: grab;
+}
+
+#knob-body:active {
+    cursor: grabbing;
+}
+
+#knob-group {
+    transform-origin: 140px 155px;
+}
+
+#knob-pointer {
+    fill: black;
+}
+
+
+/* ---- low med high ---- */
+
+#lmh {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.lmh-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px solid black;
+    background: white;
+    color: black;
+    font-size: 14px;
+    font-family: "helvetica-lt-pro", sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.lmh-btn.active {
+    background: black;
+    color: white;
+}
+
+
+/* ---- dice ---- */
+
+#dice-svg {
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.die-dot {
+    fill: black;
+    display: none;
+}
+
+.die-dot.show {
+    display: block;
+}
+
+#dice-svg.rolling rect {
+    animation: dice-shake 0.12s ease infinite;
+    transform-origin: 90px 90px;
+}
+
+@keyframes dice-shake {
+    0%, 100% { transform: rotate(0deg); }
+    25%       { transform: rotate(-4deg); }
+    75%       { transform: rotate(4deg); }
 }
 
 
@@ -685,4 +791,149 @@ font-style: normal;
     text-anchor: middle;
     dominant-baseline: middle;
     pointer-events: none;
+}
+
+
+/* ---- dropdown ---- */
+
+#dropdown-box {
+    width: 280px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#vol-dropdown {
+    width: 240px;
+    position: relative;
+    font-family: "helvetica-lt-pro", sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+}
+
+#vol-selected {
+    border: 2px solid black;
+    padding: 10px 16px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+#vol-chevron {
+    font-size: 14px;
+}
+
+#vol-options-wrap {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 2px solid black;
+    border-top: none;
+    background: white;
+    z-index: 20;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+#vol-options-wrap.open {
+    display: block;
+}
+
+#vol-options {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+#vol-options::-webkit-scrollbar {
+    display: none;
+}
+
+#vol-scroll-track {
+    width: 2px;
+    background: white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+#vol-scroll-thumb {
+    width: 2px;
+    background: black;
+    position: absolute;
+    top: 0;
+    border-radius: 1px;
+    transition: top 0.05s;
+}
+
+#vol-options.open {
+    display: block;
+}
+
+.vol-option {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.vol-option:hover {
+    background: black;
+    color: white;
+}
+
+
+/* ---- type box ---- */
+
+#type-box {
+    width: 280px;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+#type-input {
+    width: 140px;
+    border: 2px solid black;
+    padding: 8px 12px;
+    font-size: 20px;
+    font-weight: 300;
+    font-family: "helvetica-lt-pro", sans-serif;
+    outline: none;
+    text-align: center;
+    background: white;
+}
+
+#type-input.error {
+    border-color: black;
+    animation: type-shake 0.4s ease;
+}
+
+#type-error {
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#type-error.visible {
+    opacity: 1;
+}
+
+@keyframes type-shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
 }
