@@ -190,6 +190,34 @@ font-style: normal;
     padding: 0;
 }
 
+/* ---- circle control ---- */
+
+#cc-track-ring {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 3;
+}
+
+#cc-fill-ring {
+    fill: none;
+    stroke: black;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(-90deg);
+}
+
+#cc-handle {
+    fill: black;
+    cursor: grab;
+}
+
+#cc-handle:active {
+    cursor: grabbing;
+}
+
+
 /* ---- snake game---- */
 
 .snakegame {
@@ -302,6 +330,54 @@ font-style: normal;
     background: black;
     border-radius: 0 0 10px 10px;
     transition: height 0.1s;
+}
+
+
+/* ---- button control ---- */
+
+#btn-control {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    border-radius: 30px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#btn-control button {
+    width: 40px;
+    height: 44px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+
+
+
+
+/* ---- scale ---- */
+
+#scale-box {
+    width: 280px;
+    height: 280px;
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+#scale-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: black;
+    pointer-events: none;
 }
 
 

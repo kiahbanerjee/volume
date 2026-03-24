@@ -281,6 +281,101 @@ document.addEventListener('mousemove', (e) => { if (tubeDragging) tubeSet(e); })
 document.addEventListener('mouseup', () => tubeDragging = false);
 
 
+// circle control
+
+const ccSvg = document.getElementById('circle-svg');
+const ccFillRing = document.getElementById('cc-fill-ring');
+const ccHandle = document.getElementById('cc-handle');
+
+const CC_CX = 100, CC_CY = 100, CC_R = 80;
+const CC_CIRC = 2 * Math.PI * CC_R;
+ccFillRing.setAttribute('stroke-dasharray', CC_CIRC);
+
+function ccPoint(deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return { x: CC_CX + CC_R * Math.cos(rad), y: CC_CY + CC_R * Math.sin(rad) };
+}
+
+let ccDragging = false;
+let ccDeg = 0;
+
+function ccSetDeg(deg) {
+    ccDeg = Math.max(0, Math.min(359.9, deg));
+    const v = ccDeg / 360;
+    ccFillRing.setAttribute('stroke-dashoffset', CC_CIRC * (1 - v));
+    const p = ccPoint(ccDeg);
+    ccHandle.setAttribute('cx', p.x.toFixed(2));
+    ccHandle.setAttribute('cy', p.y.toFixed(2));
+    setVolume(v);
+}
+
+function ccRawAngle(e) {
+    const rect = ccSvg.getBoundingClientRect();
+    const scale = 200 / rect.width;
+    const x = (e.clientX - rect.left) * scale - CC_CX;
+    const y = (e.clientY - rect.top) * scale - CC_CY;
+    let angle = Math.atan2(y, x) * 180 / Math.PI + 90;
+    if (angle < 0) angle += 360;
+    return angle;
+}
+
+ccHandle.addEventListener('mousedown', (e) => { ccDragging = true; e.preventDefault(); });
+document.addEventListener('mousemove', (e) => {
+    if (!ccDragging) return;
+    const raw = ccRawAngle(e);
+    let delta = raw - ccDeg;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    ccSetDeg(ccDeg + delta);
+});
+document.addEventListener('mouseup', () => ccDragging = false);
+
+ccSetDeg(0);
+
+
+// scale
+
+const scaleBox = document.getElementById('scale-box');
+const scaleCircle = document.getElementById('scale-circle');
+const SCALE_MIN = 20, SCALE_MAX = 260;
+let scaleSize = SCALE_MIN;
+let scaleInterval = null;
+
+function scaleGrow() {
+    scaleSize = Math.min(SCALE_MAX, scaleSize + 4);
+    scaleCircle.style.width = scaleSize + 'px';
+    scaleCircle.style.height = scaleSize + 'px';
+    setVolume((scaleSize - SCALE_MIN) / (SCALE_MAX - SCALE_MIN));
+}
+
+function scaleShrink() {
+    scaleSize = Math.max(SCALE_MIN, scaleSize - 4);
+    scaleCircle.style.width = scaleSize + 'px';
+    scaleCircle.style.height = scaleSize + 'px';
+    setVolume((scaleSize - SCALE_MIN) / (SCALE_MAX - SCALE_MIN));
+}
+
+let scaleHeld = false;
+
+scaleBox.addEventListener('mousedown', () => {
+    scaleHeld = true;
+    clearInterval(scaleInterval);
+    scaleInterval = setInterval(scaleGrow, 30);
+});
+document.addEventListener('mouseup', () => {
+    if (!scaleHeld) return;
+    scaleHeld = false;
+    clearInterval(scaleInterval);
+    scaleInterval = setInterval(scaleShrink, 30);
+});
+
+
+// button control
+
+document.getElementById('btn-plus').addEventListener('click', () => setVolume(audio.volume + 0.1));
+document.getElementById('btn-minus').addEventListener('click', () => setVolume(audio.volume - 0.1));
+
+
 // spin wheel
 
 const spinWheel = document.getElementById('spin-wheel');
