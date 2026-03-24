@@ -158,7 +158,7 @@ updatePicker();
 // rotary dial
 
 const rotaryDisk = document.getElementById('rotary-disk');
-const DIAL_NUMS = [1,2,3,4,5,6,7,8,9,0];
+const DIAL_NUMS = [0,1,2,3,4,5,6,7,8,9];
 const DIAL_ANGLES = [120, 90, 60, 30, 0, 330, 300, 270, 240, 210];
 let rotarySelected = null;
 let rotaryAnimating = false;
@@ -193,7 +193,7 @@ DIAL_NUMS.forEach((num, i) => {
         if (rotarySelected) rotarySelected.classList.remove('selected');
         g.classList.add('selected');
         rotarySelected = g;
-        setVolume(num === 0 ? 1.0 : num / 10);
+        setVolume(num / 9);
 
         // Rotate clockwise to stop: each digit n rotates (n*30 - 15) degrees
         const rotation = (num === 0 ? 10 : num) * 30 - 15;
@@ -252,6 +252,131 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('mouseup', () => { knobDragging = false; knobPrevAngle = null; });
 
 setKnobAngle(0);
+
+// stopwatch
+
+const swHandGroup = document.getElementById('sw-hand-group');
+const swDisplay = document.getElementById('sw-display');
+const swBtn = document.getElementById('sw-btn');
+let swRunning = false;
+let swSeconds = 0;
+let swInterval = null;
+
+function swUpdate() {
+    swSeconds += 0.1;
+    if (swSeconds >= 60) swSeconds = 0;
+    const angle = (swSeconds / 60) * 360;
+    swHandGroup.style.transform = `rotate(${angle}deg)`;
+    swDisplay.textContent = swSeconds.toFixed(1) + 's';
+    setVolume(swSeconds / 60);
+}
+
+swBtn.addEventListener('click', () => {
+    if (swRunning) {
+        clearInterval(swInterval);
+        swRunning = false;
+        swBtn.setAttribute('fill', 'white');
+    } else {
+        swInterval = setInterval(swUpdate, 100);
+        swRunning = true;
+        swBtn.setAttribute('fill', 'black');
+    }
+});
+
+// click counter circle
+
+let clickCount = 0;
+const clickCircle = document.getElementById('click-circle');
+const clickCountEl = document.getElementById('click-count');
+
+clickCircle.addEventListener('click', () => {
+    clickCount = clickCount >= 10 ? 0 : clickCount + 1;
+    clickCountEl.textContent = clickCount;
+    setVolume(clickCount / 10);
+});
+
+// gradient picker
+
+const gradientBox = document.getElementById('gradient-box');
+const gradientDot = document.getElementById('gradient-dot');
+let gradientDragging = false;
+
+function setGradientPos(e) {
+    const rect = gradientBox.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width,  e.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+    gradientDot.style.left = x + 'px';
+    gradientDot.style.top  = y + 'px';
+    setVolume(x / rect.width);
+}
+
+gradientBox.addEventListener('mousedown', (e) => {
+    gradientDragging = true;
+    setGradientPos(e);
+    e.preventDefault();
+});
+window.addEventListener('mousemove', (e) => { if (gradientDragging) setGradientPos(e); });
+window.addEventListener('mouseup',   () => { gradientDragging = false; });
+
+// resize box
+
+const resizeOuter = document.getElementById('resize-outer');
+const resizeInner = document.getElementById('resize-inner');
+const RESIZE_MIN = 10, RESIZE_MAX = 240;
+let resizeDragging = false;
+let resizeMode = null;
+let resizeStartX, resizeStartY, resizeStartW, resizeStartH;
+
+function updateResizeVolume() {
+    setVolume((resizeInner.offsetWidth * resizeInner.offsetHeight) / (RESIZE_MAX * RESIZE_MAX));
+}
+
+resizeOuter.addEventListener('mousemove', (e) => {
+    if (resizeDragging) return;
+    const rect = resizeInner.getBoundingClientRect();
+    const nearRight  = Math.abs(e.clientX - rect.right)  < 8;
+    const nearBottom = Math.abs(e.clientY - rect.bottom) < 8;
+    if (nearRight && nearBottom) resizeOuter.style.cursor = 'nwse-resize';
+    else if (nearRight)          resizeOuter.style.cursor = 'ew-resize';
+    else if (nearBottom)         resizeOuter.style.cursor = 'ns-resize';
+    else                         resizeOuter.style.cursor = 'default';
+});
+
+resizeOuter.addEventListener('mouseleave', () => {
+    if (!resizeDragging) resizeOuter.style.cursor = 'default';
+});
+
+resizeInner.addEventListener('mousedown', (e) => {
+    const rect = resizeInner.getBoundingClientRect();
+    const nearRight  = Math.abs(e.clientX - rect.right)  < 8;
+    const nearBottom = Math.abs(e.clientY - rect.bottom) < 8;
+    if (nearRight || nearBottom) {
+        resizeDragging = true;
+        resizeMode = nearRight && nearBottom ? 'xy' : nearRight ? 'x' : 'y';
+        resizeStartX = e.clientX;
+        resizeStartY = e.clientY;
+        resizeStartW = resizeInner.offsetWidth;
+        resizeStartH = resizeInner.offsetHeight;
+        e.preventDefault();
+    }
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!resizeDragging) return;
+    if (resizeMode === 'x' || resizeMode === 'xy') {
+        const newW = Math.max(RESIZE_MIN, Math.min(RESIZE_MAX, resizeStartW + (e.clientX - resizeStartX)));
+        resizeInner.style.width = newW + 'px';
+    }
+    if (resizeMode === 'y' || resizeMode === 'xy') {
+        const newH = Math.max(RESIZE_MIN, Math.min(RESIZE_MAX, resizeStartH + (e.clientY - resizeStartY)));
+        resizeInner.style.height = newH + 'px';
+    }
+    updateResizeVolume();
+});
+
+window.addEventListener('mouseup', () => {
+    if (resizeDragging) { resizeDragging = false; resizeOuter.style.cursor = 'default'; }
+});
 
 // dice
 
@@ -351,7 +476,7 @@ const typeError = document.getElementById('type-error');
 typeInput.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     const val = parseInt(typeInput.value);
-    if (isNaN(val) || val < 1 || val > 100) {
+    if (isNaN(val) || val < 0 || val > 100) {
         typeInput.classList.remove('error');
         void typeInput.offsetWidth; // restart animation
         typeInput.classList.add('error');
@@ -705,9 +830,13 @@ function move2048(dir) {
     }, 120);
 }
 
+let focused2048 = false;
+document.getElementById('start-2048').addEventListener('click', () => { focused2048 = true; });
+document.addEventListener('click', (e) => { if (!e.target.closest('#game-2048')) focused2048 = false; });
+
 document.addEventListener('keydown', (e) => {
     const map = {ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down'};
-    if (map[e.key]) { e.preventDefault(); e.stopPropagation(); move2048(map[e.key]); }
+    if (map[e.key] && focused2048) { e.preventDefault(); e.stopPropagation(); move2048(map[e.key]); }
 }, { capture: true });
 
 addRandTile2048(); addRandTile2048();
@@ -872,8 +1001,13 @@ function catchStop() {
     catchBalls = [];
 }
 
+const catchWrapper = document.getElementById('catch-wrapper');
 document.addEventListener('click', (e) => {
-    if (catchRunning && !catchBox.contains(e.target)) catchStop();
+    if (catchRunning && !catchWrapper.contains(e.target)) catchStop();
+});
+
+catchBox.addEventListener('click', () => {
+    if (!catchRunning) catchStart();
 });
 
 

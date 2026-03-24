@@ -154,6 +154,7 @@
 
         <!-- 2048 -->
         <div id="game-2048">
+            <button id="start-2048">START</button>
             <div id="grid-2048"></div>
         </div>
 
@@ -179,8 +180,8 @@
 
         <!-- type box -->
         <div id="type-box">
-            <input id="type-input" type="text" placeholder="1 – 100" autocomplete="off"/>
-            <span id="type-error">enter a number 1–100</span>
+            <input id="type-input" type="text" placeholder="type" autocomplete="off"/>
+            <span id="type-error">enter a number 0–100</span>
         </div>
 
         <!-- knob -->
@@ -231,7 +232,71 @@
             <circle class="die-dot" id="dot-br" cx="135" cy="135" r="16"/>
         </svg>
 
+        <!-- resize box -->
+        <div id="resize-outer">
+            <div id="resize-inner"></div>
+        </div>
+
+        <!-- gradient picker -->
+        <div id="gradient-box">
+            <div id="gradient-dot"></div>
+        </div>
+
+        <!-- click counter circle -->
+        <div id="click-circle">
+            <span id="click-count">0</span>
+        </div>
+
     </div><!-- end fifth-row -->
+
+    <!-- sixth row -->
+    <div id="sixth-row">
+
+        <!-- stopwatch -->
+        <div id="stopwatch-widget">
+            <svg id="sw-svg" viewBox="0 0 280 300" width="280" height="300">
+                <!-- crown (start/stop) -->
+                <rect id="sw-btn" x="122" y="20" width="36" height="18" rx="5" fill="white" stroke="black" stroke-width="2" cursor="pointer"/>
+                <!-- face -->
+                <circle cx="140" cy="148" r="110" fill="white" stroke="black" stroke-width="2"/>
+                <!-- tick marks -->
+                <line x1="140" y1="38"  x2="140" y2="45"  stroke="black" stroke-width="1.5"/>
+                <line x1="195" y1="53"  x2="192" y2="59"  stroke="black" stroke-width="1.5"/>
+                <line x1="235" y1="93"  x2="229" y2="97"  stroke="black" stroke-width="1.5"/>
+                <line x1="250" y1="148" x2="243" y2="148" stroke="black" stroke-width="1.5"/>
+                <line x1="235" y1="203" x2="229" y2="200" stroke="black" stroke-width="1.5"/>
+                <line x1="195" y1="243" x2="192" y2="237" stroke="black" stroke-width="1.5"/>
+                <line x1="140" y1="258" x2="140" y2="251" stroke="black" stroke-width="1.5"/>
+                <line x1="85"  y1="243" x2="89"  y2="237" stroke="black" stroke-width="1.5"/>
+                <line x1="45"  y1="203" x2="51"  y2="200" stroke="black" stroke-width="1.5"/>
+                <line x1="30"  y1="148" x2="37"  y2="148" stroke="black" stroke-width="1.5"/>
+                <line x1="45"  y1="93"  x2="51"  y2="97"  stroke="black" stroke-width="1.5"/>
+                <line x1="85"  y1="53"  x2="89"  y2="59"  stroke="black" stroke-width="1.5"/>
+                <!-- labels -->
+                <text x="140" y="65"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">12</text>
+                <text x="182" y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">1</text>
+                <text x="212" y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">2</text>
+                <text x="223" y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">3</text>
+                <text x="212" y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">4</text>
+                <text x="182" y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">5</text>
+                <text x="140" y="231" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">6</text>
+                <text x="99"  y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">7</text>
+                <text x="68"  y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">8</text>
+                <text x="57"  y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">9</text>
+                <text x="68"  y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">10</text>
+                <text x="99"  y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">11</text>
+                <!-- hand -->
+                <g id="sw-hand-group">
+                    <line x1="140" y1="148" x2="140" y2="62" stroke="black" stroke-width="2" stroke-linecap="round"/>
+                </g>
+                <!-- center dot -->
+                <circle cx="140" cy="148" r="4" fill="black"/>
+                <!-- seconds display -->
+                <text id="sw-display" x="140" y="285" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="bold" font-family="helvetica-lt-pro,sans-serif">0.0s</text>
+            </svg>
+        </div>
+
+    </div><!-- end sixth-row -->
 
     <script src="script.js"></script>
 

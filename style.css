@@ -478,6 +478,21 @@ font-style: normal;
 
 /* ---- 2048 ---- */
 
+#start-2048 {
+    width: fit-content;
+    background: none;
+    border: 2px solid black;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: "helvetica-lt-pro", sans-serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    padding: 0 2px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+
 #game-2048 {
     border: 2px solid black;
     border-radius: 16px;
@@ -616,6 +631,15 @@ font-style: normal;
     gap: 40px;
 }
 
+/* ---- sixth row ---- */
+
+#sixth-row {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
 
 /* ---- slot machine ---- */
 
@@ -739,6 +763,90 @@ font-style: normal;
     0%, 100% { transform: rotate(0deg); }
     25%       { transform: rotate(-4deg); }
     75%       { transform: rotate(4deg); }
+}
+
+
+/* ---- resize box ---- */
+
+#resize-outer {
+    width: 280px;
+    height: 280px;
+    border: 2px solid black;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#resize-inner {
+    position: absolute;
+    background: black;
+    top: 20px;
+    left: 20px;
+    width: 120px;
+    height: 120px;
+}
+
+
+/* ---- click counter circle ---- */
+
+#click-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+#click-count {
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+
+/* ---- stopwatch ---- */
+
+#stopwatch-widget {
+    flex-shrink: 0;
+}
+
+#sw-btn {
+    cursor: pointer;
+}
+
+#sw-hand-group {
+    transform-origin: 140px 148px;
+}
+
+
+/* ---- gradient picker ---- */
+
+#gradient-box {
+    width: 280px;
+    height: 60px;
+    background: linear-gradient(to right, white, black);
+    border: 2px solid black;
+    position: relative;
+    flex-shrink: 0;
+    cursor: crosshair;
+}
+
+#gradient-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: black;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    left: 50%;
+    top: 0px;
+    mix-blend-mode: difference;
 }
 
 
