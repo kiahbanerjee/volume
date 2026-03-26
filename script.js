@@ -20,7 +20,7 @@ playPauseBtn.addEventListener('click', () => {
 
 // linear circles
 
-const TOTAL = 16;
+const TOTAL = 10;
 let count = 5;
 
 const container = document.getElementById('circles');
@@ -99,7 +99,7 @@ spawn();
 // scroll picker
 
 const PICKER_TOTAL = 11;
-const PICKER_CENTER = 140; 
+const PICKER_CENTER = 90;
 let pickerIndex = 0; 
 
 const pickerList = document.getElementById('picker-list');
@@ -123,9 +123,9 @@ function updatePicker() {
 
         if (Math.abs(dist) > 1) return;
 
-        const ITEM_GAP = 70;
+        const ITEM_GAP = 50;
         item.style.top = (PICKER_CENTER + dist * ITEM_GAP) + 'px';
-        item.style.left = (dist === 0 ? 60 : 16) + 'px';
+        item.style.left = '0';
     });
 
   
@@ -195,8 +195,9 @@ DIAL_NUMS.forEach((num, i) => {
         rotarySelected = g;
         setVolume(num / 9);
 
-        // Rotate clockwise to stop: each digit n rotates (n*30 - 15) degrees
-        const rotation = (num === 0 ? 10 : num) * 30 - 15;
+        // Rotate clockwise until hole reaches stop at ~120°
+        const stopAngle = 120;
+        const rotation = num === 0 ? 15 : (stopAngle - DIAL_ANGLES[i] + 360) % 360;
 
         // Forward: slow ease-in (finger pushing)
         rotaryDisk.style.transition = 'transform 0.5s ease-in';
@@ -222,7 +223,7 @@ let knobDragging = false;
 let knobPrevAngle = null;
 
 function setKnobAngle(vol) {
-    knobGroup.style.transform = `rotate(${320 + vol * 80}deg)`;
+    knobGroup.setAttribute('transform', `rotate(${-40 + vol * 80}, 140, 155)`);
 }
 
 function knobGetAngle(e) {
@@ -267,7 +268,7 @@ function swUpdate() {
     if (swSeconds >= 60) swSeconds = 0;
     const angle = (swSeconds / 60) * 360;
     swHandGroup.style.transform = `rotate(${angle}deg)`;
-    swDisplay.textContent = swSeconds.toFixed(1) + 's';
+    swDisplay.textContent = swSeconds.toFixed(1);
     setVolume(swSeconds / 60);
 }
 
@@ -303,10 +304,9 @@ let gradientDragging = false;
 
 function setGradientPos(e) {
     const rect = gradientBox.getBoundingClientRect();
-    const x = Math.max(0, Math.min(rect.width,  e.clientX - rect.left));
-    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    gradientDot.style.top  = '50%';
     gradientDot.style.left = x + 'px';
-    gradientDot.style.top  = y + 'px';
     setVolume(x / rect.width);
 }
 
@@ -318,11 +318,18 @@ gradientBox.addEventListener('mousedown', (e) => {
 window.addEventListener('mousemove', (e) => { if (gradientDragging) setGradientPos(e); });
 window.addEventListener('mouseup',   () => { gradientDragging = false; });
 
+(function initGradient() {
+    const v = 0.65;
+    gradientDot.style.top  = '50%';
+    gradientDot.style.left = (v * 100) + '%';
+    setVolume(v);
+})();
+
 // resize box
 
 const resizeOuter = document.getElementById('resize-outer');
 const resizeInner = document.getElementById('resize-inner');
-const RESIZE_MIN = 10, RESIZE_MAX = 240;
+const RESIZE_MIN = 10, RESIZE_MAX = 156;
 let resizeDragging = false;
 let resizeMode = null;
 let resizeStartX, resizeStartY, resizeStartW, resizeStartH;
@@ -396,7 +403,7 @@ function showDice(n) {
 
 const diceSvg = document.getElementById('dice-svg');
 let diceRolling = false;
-showDice(1);
+showDice(3);
 
 diceSvg.addEventListener('click', () => {
     if (diceRolling) return;
@@ -573,7 +580,7 @@ function snakeRender() {
 }
 
 function snakeUpdate() {
-    if (speedRow === 0 && speedCol === 0) return;
+    if (!snakeActive || (speedRow === 0 && speedCol === 0)) return;
 
     const newRow = snakeRow + speedRow;
     const newCol = snakeCol + speedCol;
@@ -617,10 +624,32 @@ function snakeReset() {
     snakeRender();
 }
 
+let snakeActive = false;
+const snakeBtn = document.getElementById('snake-refresh');
+
 snakeReset();
-document.addEventListener("keyup", changeDirection);
 setInterval(snakeUpdate, 100);
-document.getElementById('snake-refresh').addEventListener('click', snakeReset);
+
+snakeBtn.addEventListener('click', () => {
+    if (!snakeActive) {
+        snakeActive = true;
+        snakeBtn.textContent = '↻';
+        speedCol = 1; speedRow = 0;
+        document.addEventListener("keyup", changeDirection);
+    } else {
+        snakeReset();
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (snakeActive && !e.target.closest('.snakegame')) {
+        snakeActive = false;
+        speedRow = 0; speedCol = 0;
+        snakeBtn.textContent = '▶';
+        document.removeEventListener("keyup", changeDirection);
+        snakeReset();
+    }
+});
 
 
 // calculator
@@ -692,7 +721,7 @@ function ccPoint(deg) {
 }
 
 let ccDragging = false;
-let ccDeg = 0;
+let ccDeg = 90;
 
 function ccSetDeg(deg) {
     ccDeg = Math.max(0, Math.min(359.9, deg));
@@ -725,12 +754,12 @@ document.addEventListener('mousemove', (e) => {
 });
 document.addEventListener('mouseup', () => ccDragging = false);
 
-ccSetDeg(0);
+ccSetDeg(90);
 
 
 // 2048
 
-const CELL2 = 70;
+const CELL2 = 37;
 let board2048 = Array.from({length:4}, () => Array(4).fill(null));
 const grid2048 = document.getElementById('grid-2048');
 const tileEls2048 = new Map();
@@ -831,8 +860,21 @@ function move2048(dir) {
 }
 
 let focused2048 = false;
-document.getElementById('start-2048').addEventListener('click', () => { focused2048 = true; });
-document.addEventListener('click', (e) => { if (!e.target.closest('#game-2048')) focused2048 = false; });
+const startBtn2048 = document.getElementById('start-2048');
+
+startBtn2048.addEventListener('click', () => {
+    focused2048 = true;
+    startBtn2048.style.background = 'black';
+    startBtn2048.style.color = 'white';
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#game-2048')) {
+        focused2048 = false;
+        startBtn2048.style.background = '';
+        startBtn2048.style.color = '';
+    }
+});
 
 document.addEventListener('keydown', (e) => {
     const map = {ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down'};
@@ -912,15 +954,15 @@ document.getElementById('memory-refresh').addEventListener('click', memInit);
 
 const catchBox = document.getElementById('catch-box');
 const catchBucket = document.getElementById('catch-bucket');
-const CATCH_W = 280, CATCH_H = 280;
-const BALL_D = 22, BUCKET_W = 70, BUCKET_H = 36;
-const BUCKET_BOTTOM = 10;
+const CATCH_W = 176, CATCH_H = 171;
+const BALL_D = 14, BUCKET_W = 44, BUCKET_H = 24;
+const BUCKET_BOTTOM = 6;
 let bucketX = (CATCH_W - BUCKET_W) / 2;
 let catchBalls = [];
 
 const catchScrollbar = document.getElementById('catch-scrollbar');
 const catchThumb = document.getElementById('catch-thumb');
-const THUMB_W = 70;
+const THUMB_W = 44;
 let catchThumbDragging = false;
 let catchThumbStartX = 0;
 let catchThumbStartBucket = 0;
@@ -928,7 +970,7 @@ let catchThumbStartBucket = 0;
 function updateBucket() {
     bucketX = Math.max(0, Math.min(CATCH_W - BUCKET_W, bucketX));
     catchBucket.style.left = bucketX + 'px';
-    catchThumb.style.left = (bucketX / (CATCH_W - BUCKET_W) * (280 - THUMB_W)) + 'px';
+    catchThumb.style.left = (bucketX / (CATCH_W - BUCKET_W) * (CATCH_W - THUMB_W)) + 'px';
 }
 updateBucket();
 
@@ -948,7 +990,7 @@ catchThumb.addEventListener('mousedown', (e) => {
 document.addEventListener('mousemove', (e) => {
     if (!catchThumbDragging) return;
     const dx = e.clientX - catchThumbStartX;
-    bucketX = catchThumbStartBucket + dx * (CATCH_W - BUCKET_W) / (280 - THUMB_W);
+    bucketX = catchThumbStartBucket + dx * (CATCH_W - BUCKET_W) / (CATCH_W - THUMB_W);
     updateBucket();
 });
 document.addEventListener('mouseup', () => catchThumbDragging = false);
@@ -1015,7 +1057,7 @@ catchBox.addEventListener('click', () => {
 
 const scaleBox = document.getElementById('scale-box');
 const scaleCircle = document.getElementById('scale-circle');
-const SCALE_MIN = 20, SCALE_MAX = 260;
+const SCALE_MIN = 10, SCALE_MAX = 170;
 let scaleSize = SCALE_MIN;
 let scaleInterval = null;
 
@@ -1031,20 +1073,33 @@ function scaleShrink() {
     scaleCircle.style.width = scaleSize + 'px';
     scaleCircle.style.height = scaleSize + 'px';
     setVolume((scaleSize - SCALE_MIN) / (SCALE_MAX - SCALE_MIN));
+    if (scaleSize <= SCALE_MIN) { clearInterval(scaleInterval); scaleInterval = null; }
+}
+
+function scaleReset() {
+    clearInterval(scaleInterval);
+    scaleInterval = null;
+    scaleSize = SCALE_MIN;
+    scaleCircle.style.width = scaleSize + 'px';
+    scaleCircle.style.height = scaleSize + 'px';
 }
 
 let scaleHeld = false;
 
-scaleBox.addEventListener('mousedown', () => {
+scaleBox.addEventListener('mousedown', (e) => {
     scaleHeld = true;
     clearInterval(scaleInterval);
     scaleInterval = setInterval(scaleGrow, 30);
+    e.stopPropagation();
 });
 document.addEventListener('mouseup', () => {
     if (!scaleHeld) return;
     scaleHeld = false;
     clearInterval(scaleInterval);
     scaleInterval = setInterval(scaleShrink, 30);
+});
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#scale-box')) scaleReset();
 });
 
 

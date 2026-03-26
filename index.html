@@ -9,74 +9,84 @@
 </head>
 <body>
 
+    <svg width="0" height="0" style="position:absolute">
+        <filter id="grain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+            <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+            <feComponentTransfer in="grayNoise" result="softerNoise">
+                <feFuncA type="linear" slope="0.3"/>
+            </feComponentTransfer>
+            <feBlend in="SourceGraphic" in2="softerNoise" mode="overlay" result="blended"/>
+            <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+        </filter>
+    </svg>
+
     <audio id="audio" src="Mau%20P%20-%20The%20Less%20I%20Know%20The%20Better%20-%20Nervous%20Records.mp3" loop tabindex="-1"></audio>
     <button id="play-pause">▶</button>
 
-    <!-- linear circles -->
+    <!-- linear circles (17×127) -->
     <div class="slider">
         <button class="arrow" id="down">↓</button>
         <div class="circles" id="circles"></div>
         <button class="arrow" id="up">↑</button>
     </div>
 
-    <!-- grid of circles-->
+    <!-- grid of circles (119×85) -->
     <div id="grid"></div>
 
-    <!-- random circles -->
+    <!-- random circles (176×179) -->
     <div id="box">
         <button id="refresh">↻</button>
     </div>
 
-    <!-- scroll picker -->
+    <!-- scroll picker (102×145) -->
     <div id="picker">
-        <div id="picker-list"></div>
-        <div id="picker-track"><div id="picker-thumb"></div></div>
+        <div id="picker-list">
+            <div id="picker-track"><div id="picker-thumb"></div></div>
+        </div>
     </div>
 
-    <!-- snake game -->
+    <!-- snake game (176×179) -->
     <div class="snakegame">
         <div id="board"></div>
-        <button id="snake-refresh">↻</button>
+        <button id="snake-refresh">▶</button>
     </div>
 
-    <!-- bottom row -->
-    <div id="bottom-row">
-
-        <!-- tube -->
-        <div id="tube">
-            <div id="tube-fill"></div>
+    <!-- calculator (116×212) -->
+    <div id="calc">
+        <div id="calc-display">0</div>
+        <div id="calc-buttons">
+            <button data-action="back" class="calc-fn">⌫</button>
+            <button data-action="clear" class="calc-fn">AC</button>
+            <button data-val="%" class="calc-fn">%</button>
+            <button data-val="÷" class="calc-op">÷</button>
+            <button data-val="7">7</button>
+            <button data-val="8">8</button>
+            <button data-val="9">9</button>
+            <button data-val="×" class="calc-op">×</button>
+            <button data-val="4">4</button>
+            <button data-val="5">5</button>
+            <button data-val="6">6</button>
+            <button data-val="-" class="calc-op">-</button>
+            <button data-val="1">1</button>
+            <button data-val="2">2</button>
+            <button data-val="3">3</button>
+            <button data-val="+" class="calc-op">+</button>
+            <button data-val="+/-">+/-</button>
+            <button data-val="0">0</button>
+            <button data-val=".">.</button>
+            <button data-action="equals" class="calc-op">=</button>
         </div>
+    </div>
 
-        <!-- calculator -->
-        <div id="calc">
-            <div id="calc-display">0</div>
-            <div id="calc-buttons">
-                <button data-action="back" class="calc-fn">⌫</button>
-                <button data-action="clear" class="calc-fn">AC</button>
-                <button data-val="%" class="calc-fn">%</button>
-                <button data-val="÷" class="calc-op">÷</button>
-                <button data-val="7">7</button>
-                <button data-val="8">8</button>
-                <button data-val="9">9</button>
-                <button data-val="×" class="calc-op">×</button>
-                <button data-val="4">4</button>
-                <button data-val="5">5</button>
-                <button data-val="6">6</button>
-                <button data-val="-" class="calc-op">-</button>
-                <button data-val="1">1</button>
-                <button data-val="2">2</button>
-                <button data-val="3">3</button>
-                <button data-val="+" class="calc-op">+</button>
-                <button data-val="+/-">+/-</button>
-                <button data-val="0">0</button>
-                <button data-val=".">.</button>
-                <button data-action="equals" class="calc-op">=</button>
-            </div>
-        </div>
+    <!-- tube (8×179) -->
+    <div id="tube">
+        <div id="tube-fill"></div>
+    </div>
 
-        <!-- spin wheel -->
-        <div id="spin-widget">
-        <svg id="spin-svg" viewBox="0 0 300 300" width="280" height="280">
+    <!-- spin wheel (246×268) -->
+    <div id="spin-widget">
+        <svg id="spin-svg" viewBox="0 0 300 300" width="246" height="268">
             <polygon id="spin-pointer" points="143,8 157,8 150,22"/>
             <g id="spin-wheel">
                 <path d="M150,150 L150,20 A130,130 0 0,1 241.9,58.1 Z"/>
@@ -93,7 +103,7 @@
                 <text x="180.6" y="223.9">+1</text>
                 <text x="119.4" y="223.9">-2</text>
                 <text x="76.1" y="180.6">x0</text>
-                <text x="76.1" y="119.4">-1</text>
+                <text x="76.1" y="119.4">+4</text>
                 <text x="119.4" y="76.1">x3</text>
             </g>
             <circle id="spin-center" cx="150" cy="150" r="30"/>
@@ -101,204 +111,174 @@
         </svg>
     </div>
 
-        <!-- circle control -->
-        <div id="circle-control">
-            <svg id="circle-svg" viewBox="0 0 200 200" width="180" height="180">
-                <circle id="cc-track-ring" cx="100" cy="100" r="80"/>
-                <circle id="cc-fill-ring" cx="100" cy="100" r="80"/>
-                <circle id="cc-handle" r="10"/>
-            </svg>
-        </div>
-
-        <!-- button control -->
-        <div id="btn-control">
-            <button id="btn-plus">+</button>
-            <button id="btn-minus">−</button>
-        </div>
-
-        <!-- scale -->
-        <div id="scale-box">
-            <div id="scale-circle"></div>
-        </div>
-
-    </div><!-- end bottom-row -->
-
-    <!-- third row -->
-    <div id="third-row">
-
-        <!-- catch game -->
-        <div id="catch-wrapper">
-            <div id="catch-box">
-                <div id="catch-bucket"></div>
-            </div>
-            <div id="catch-scrollbar">
-                <div id="catch-thumb"></div>
-            </div>
-        </div>
-
-        <!-- rotary dial -->
-        <svg id="rotary-svg" viewBox="0 0 280 280" width="280" height="280">
-            <circle cx="140" cy="140" r="125" fill="white" stroke="black" stroke-width="2"/>
-            <g id="rotary-disk"></g>
-            <path d="M 238.5,217 A 125,125 0 0,1 217,238.5 L 205.9,224.3 A 107,107 0 0,0 224.3,205.9 Z" fill="white" stroke="black" stroke-width="2"/>
-            <circle cx="140" cy="140" r="40" fill="white" stroke="black" stroke-width="2"/>
+    <!-- circle control (44×42) -->
+    <div id="circle-control">
+        <svg id="circle-svg" viewBox="0 0 200 200" width="72" height="72">
+            <circle id="cc-track-ring" cx="100" cy="100" r="80"/>
+            <circle id="cc-fill-ring" cx="100" cy="100" r="80"/>
+            <circle id="cc-handle" r="10"/>
         </svg>
+    </div>
 
-        <!-- memory game -->
-        <div id="memory-wrapper">
-            <div id="memory-game">
-                <div id="memory-grid"></div>
-            </div>
-            <button id="memory-refresh">↻</button>
+    <!-- button control (24×46) -->
+    <div id="btn-control">
+        <button id="btn-plus">+</button>
+        <button id="btn-minus">−</button>
+    </div>
+
+    <!-- scale (176×179) -->
+    <div id="scale-box">
+        <div id="scale-circle"></div>
+    </div>
+
+    <!-- catch game (176×179) -->
+    <div id="catch-wrapper">
+        <div id="catch-box">
+            <div id="catch-bucket"></div>
         </div>
-
-        <!-- 2048 -->
-        <div id="game-2048">
-            <button id="start-2048">START</button>
-            <div id="grid-2048"></div>
+        <div id="catch-scrollbar">
+            <div id="catch-thumb"></div>
         </div>
+    </div>
 
-    </div><!-- end third-row -->
+    <!-- rotary dial (196×190) -->
+    <svg id="rotary-svg" viewBox="0 0 280 280" width="196" height="190">
+        <circle cx="140" cy="140" r="125" fill="white" stroke="black" stroke-width="2.9"/>
+        <g id="rotary-disk"></g>
+        <path d="M 238.5,217 A 125,125 0 0,1 217,238.5 L 205.9,224.3 A 107,107 0 0,0 224.3,205.9 Z" fill="white" stroke="black" stroke-width="2.9"/>
+        <circle cx="140" cy="140" r="40" fill="white" stroke="black" stroke-width="2.9"/>
+    </svg>
 
-    <!-- fourth row -->
-    <div id="fourth-row">
-
-        <!-- slot machine -->
-        <div id="slot-machine">
-            <div id="slot-reels">
-                <div class="slot-reel"><span class="slot-num">?</span></div>
-                <div class="slot-reel"><span class="slot-num">?</span></div>
-                <div class="slot-reel"><span class="slot-num">?</span></div>
-            </div>
-            <svg id="slot-lever-svg" viewBox="0 0 60 220" width="60" height="220">
-                <g id="slot-lever-arm">
-                    <line x1="20" y1="205" x2="42" y2="44" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle id="slot-handle" cx="44" cy="28" r="16" fill="black"/>
-                </g>
-            </svg>
+    <!-- memory game (198×212) -->
+    <div id="memory-wrapper">
+        <div id="memory-game">
+            <div id="memory-grid"></div>
         </div>
+        <button id="memory-refresh">↻</button>
+    </div>
 
-        <!-- type box -->
-        <div id="type-box">
-            <input id="type-input" type="text" placeholder="type" autocomplete="off"/>
-            <span id="type-error">enter a number 0–100</span>
+    <!-- 2048 (176×176) -->
+    <div id="game-2048">
+        <button id="start-2048">START</button>
+        <div id="grid-2048"></div>
+    </div>
+
+    <!-- slot machine (218×157) -->
+    <div id="slot-machine">
+        <div id="slot-reels">
+            <div class="slot-reel"><span class="slot-num">?</span></div>
+            <div class="slot-reel"><span class="slot-num">?</span></div>
+            <div class="slot-reel"><span class="slot-num">?</span></div>
         </div>
-
-        <!-- knob -->
-        <svg id="knob-svg" viewBox="0 0 280 280" width="280" height="280">
-            <circle class="knob-dot" cx="71"  cy="72"  r="5"/>
-            <circle class="knob-dot" cx="92"  cy="55"  r="8"/>
-            <circle class="knob-dot" cx="125" cy="41"  r="12"/>
-            <circle class="knob-dot" cx="169" cy="40"  r="16"/>
-            <circle class="knob-dot" cx="220" cy="60"  r="21"/>
-            <circle id="knob-body" cx="140" cy="155" r="95"/>
-            <g id="knob-group">
-                <polygon id="knob-pointer" points="128,92 152,92 140,78"/>
+        <svg id="slot-lever-svg" viewBox="0 0 60 220" width="40" height="157">
+            <g id="slot-lever-arm">
+                <line x1="20" y1="205" x2="42" y2="44" stroke="black" stroke-width="2" stroke-linecap="round"/>
+                <circle id="slot-handle" cx="44" cy="28" r="16" fill="black"/>
             </g>
         </svg>
+    </div>
 
-        <!-- low med high -->
-        <div id="lmh">
-            <button class="lmh-btn" data-vol="0.25">low</button>
-            <button class="lmh-btn" data-vol="0.55">med</button>
-            <button class="lmh-btn" data-vol="1">high</button>
-        </div>
+    <!-- type box (77×18) -->
+    <div id="type-box">
+        <span id="type-error">enter a number 0–100</span>
+        <input id="type-input" type="text" placeholder="type" autocomplete="off"/>
+    </div>
 
-    </div><!-- end fourth-row -->
+    <!-- knob (124×143) -->
+    <svg id="knob-svg" viewBox="0 0 280 280" width="180" height="207">
+        <circle class="knob-dot" cx="71"  cy="72"  r="5"/>
+        <circle class="knob-dot" cx="92"  cy="55"  r="8"/>
+        <circle class="knob-dot" cx="125" cy="41"  r="12"/>
+        <circle class="knob-dot" cx="169" cy="40"  r="16"/>
+        <circle class="knob-dot" cx="220" cy="60"  r="21"/>
+        <g id="knob-group">
+            <circle id="knob-body" cx="140" cy="155" r="95"/>
+            <line id="knob-pointer" x1="140" y1="62" x2="140" y2="80" stroke="black" stroke-width="3.1" stroke-linecap="round"/>
+        </g>
+    </svg>
 
-    <!-- fifth row -->
-    <div id="fifth-row">
+    <!-- low med high (124×36) -->
+    <div id="lmh">
+        <button class="lmh-btn" data-vol="0.25">low</button>
+        <button class="lmh-btn" data-vol="0.55">med</button>
+        <button class="lmh-btn" data-vol="1">high</button>
+    </div>
 
-        <!-- dropdown -->
-        <div id="dropdown-box">
-            <div id="vol-dropdown">
-                <div id="vol-selected">Select <span id="vol-chevron">∨</span></div>
-                <div id="vol-options-wrap">
-                    <div id="vol-options"></div>
-                    <div id="vol-scroll-track"><div id="vol-scroll-thumb"></div></div>
-                </div>
+    <!-- dropdown (77×18) -->
+    <div id="dropdown-box">
+        <div id="vol-dropdown">
+            <div id="vol-selected">Select <span id="vol-chevron">∨</span></div>
+            <div id="vol-options-wrap">
+                <div id="vol-options"></div>
+                <div id="vol-scroll-track"><div id="vol-scroll-thumb"></div></div>
             </div>
         </div>
+    </div>
 
-        <!-- dice -->
-        <svg id="dice-svg" viewBox="0 0 180 180" width="180" height="180">
-            <rect x="2" y="2" width="176" height="176" rx="12" fill="white" stroke="black" stroke-width="2"/>
-            <circle class="die-dot" id="dot-tl" cx="45"  cy="45"  r="16"/>
-            <circle class="die-dot" id="dot-tr" cx="135" cy="45"  r="16"/>
-            <circle class="die-dot" id="dot-ml" cx="45"  cy="90"  r="16"/>
-            <circle class="die-dot" id="dot-c"  cx="90"  cy="90"  r="16"/>
-            <circle class="die-dot" id="dot-mr" cx="135" cy="90"  r="16"/>
-            <circle class="die-dot" id="dot-bl" cx="45"  cy="135" r="16"/>
-            <circle class="die-dot" id="dot-br" cx="135" cy="135" r="16"/>
+    <!-- dice (85×85) -->
+    <svg id="dice-svg" viewBox="0 0 180 180" width="85" height="85">
+        <rect x="2" y="2" width="176" height="176" rx="12" fill="white" stroke="black" stroke-width="4"/>
+        <circle class="die-dot" id="dot-tl" cx="45"  cy="45"  r="16"/>
+        <circle class="die-dot" id="dot-tr" cx="135" cy="45"  r="16"/>
+        <circle class="die-dot" id="dot-ml" cx="45"  cy="90"  r="16"/>
+        <circle class="die-dot" id="dot-c"  cx="90"  cy="90"  r="16"/>
+        <circle class="die-dot" id="dot-mr" cx="135" cy="90"  r="16"/>
+        <circle class="die-dot" id="dot-bl" cx="45"  cy="135" r="16"/>
+        <circle class="die-dot" id="dot-br" cx="135" cy="135" r="16"/>
+    </svg>
+
+    <!-- resize box (176×179) -->
+    <div id="resize-outer">
+        <div id="resize-inner"></div>
+    </div>
+
+    <!-- gradient picker (24×179) -->
+    <div id="gradient-box">
+        <div id="gradient-dot"></div>
+    </div>
+
+    <!-- click counter (37×37) -->
+    <div id="click-circle">
+        <span id="click-count">0</span>
+    </div>
+
+    <!-- stopwatch (180×186) -->
+    <div id="stopwatch-widget">
+        <svg id="sw-svg" viewBox="0 0 280 300" width="250" height="259">
+            <rect id="sw-btn" x="122" y="20" width="36" height="18" rx="5" fill="white" stroke="black" stroke-width="2" cursor="pointer"/>
+            <circle cx="140" cy="148" r="110" fill="white" stroke="black" stroke-width="2"/>
+            <line x1="140" y1="38"  x2="140" y2="45"  stroke="black" stroke-width="2"/>
+            <line x1="195" y1="53"  x2="192" y2="59"  stroke="black" stroke-width="2"/>
+            <line x1="235" y1="93"  x2="229" y2="97"  stroke="black" stroke-width="2"/>
+            <line x1="250" y1="148" x2="243" y2="148" stroke="black" stroke-width="2"/>
+            <line x1="235" y1="203" x2="229" y2="200" stroke="black" stroke-width="2"/>
+            <line x1="195" y1="243" x2="192" y2="237" stroke="black" stroke-width="2"/>
+            <line x1="140" y1="258" x2="140" y2="251" stroke="black" stroke-width="2"/>
+            <line x1="85"  y1="243" x2="89"  y2="237" stroke="black" stroke-width="2"/>
+            <line x1="45"  y1="203" x2="51"  y2="200" stroke="black" stroke-width="2"/>
+            <line x1="30"  y1="148" x2="37"  y2="148" stroke="black" stroke-width="2"/>
+            <line x1="45"  y1="93"  x2="51"  y2="97"  stroke="black" stroke-width="2"/>
+            <line x1="85"  y1="53"  x2="89"  y2="59"  stroke="black" stroke-width="2"/>
+            <text x="140" y="65"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">12</text>
+            <text x="182" y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">1</text>
+            <text x="212" y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">2</text>
+            <text x="223" y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">3</text>
+            <text x="212" y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">4</text>
+            <text x="182" y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">5</text>
+            <text x="140" y="231" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">6</text>
+            <text x="99"  y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">7</text>
+            <text x="68"  y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">8</text>
+            <text x="57"  y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">9</text>
+            <text x="68"  y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">10</text>
+            <text x="99"  y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">11</text>
+            <g id="sw-hand-group">
+                <line x1="140" y1="148" x2="140" y2="62" stroke="black" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <circle cx="140" cy="148" r="4" fill="black"/>
+            <text id="sw-display" x="141" y="178" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="bold" font-family="helvetica-lt-pro,sans-serif">0.0</text>
         </svg>
-
-        <!-- resize box -->
-        <div id="resize-outer">
-            <div id="resize-inner"></div>
-        </div>
-
-        <!-- gradient picker -->
-        <div id="gradient-box">
-            <div id="gradient-dot"></div>
-        </div>
-
-        <!-- click counter circle -->
-        <div id="click-circle">
-            <span id="click-count">0</span>
-        </div>
-
-    </div><!-- end fifth-row -->
-
-    <!-- sixth row -->
-    <div id="sixth-row">
-
-        <!-- stopwatch -->
-        <div id="stopwatch-widget">
-            <svg id="sw-svg" viewBox="0 0 280 300" width="280" height="300">
-                <!-- crown (start/stop) -->
-                <rect id="sw-btn" x="122" y="20" width="36" height="18" rx="5" fill="white" stroke="black" stroke-width="2" cursor="pointer"/>
-                <!-- face -->
-                <circle cx="140" cy="148" r="110" fill="white" stroke="black" stroke-width="2"/>
-                <!-- tick marks -->
-                <line x1="140" y1="38"  x2="140" y2="45"  stroke="black" stroke-width="1.5"/>
-                <line x1="195" y1="53"  x2="192" y2="59"  stroke="black" stroke-width="1.5"/>
-                <line x1="235" y1="93"  x2="229" y2="97"  stroke="black" stroke-width="1.5"/>
-                <line x1="250" y1="148" x2="243" y2="148" stroke="black" stroke-width="1.5"/>
-                <line x1="235" y1="203" x2="229" y2="200" stroke="black" stroke-width="1.5"/>
-                <line x1="195" y1="243" x2="192" y2="237" stroke="black" stroke-width="1.5"/>
-                <line x1="140" y1="258" x2="140" y2="251" stroke="black" stroke-width="1.5"/>
-                <line x1="85"  y1="243" x2="89"  y2="237" stroke="black" stroke-width="1.5"/>
-                <line x1="45"  y1="203" x2="51"  y2="200" stroke="black" stroke-width="1.5"/>
-                <line x1="30"  y1="148" x2="37"  y2="148" stroke="black" stroke-width="1.5"/>
-                <line x1="45"  y1="93"  x2="51"  y2="97"  stroke="black" stroke-width="1.5"/>
-                <line x1="85"  y1="53"  x2="89"  y2="59"  stroke="black" stroke-width="1.5"/>
-                <!-- labels -->
-                <text x="140" y="65"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">12</text>
-                <text x="182" y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">1</text>
-                <text x="212" y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">2</text>
-                <text x="223" y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">3</text>
-                <text x="212" y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">4</text>
-                <text x="182" y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">5</text>
-                <text x="140" y="231" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">6</text>
-                <text x="99"  y="220" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">7</text>
-                <text x="68"  y="190" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">8</text>
-                <text x="57"  y="148" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">9</text>
-                <text x="68"  y="107" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">10</text>
-                <text x="99"  y="76"  text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="helvetica-lt-pro,sans-serif">11</text>
-                <!-- hand -->
-                <g id="sw-hand-group">
-                    <line x1="140" y1="148" x2="140" y2="62" stroke="black" stroke-width="2" stroke-linecap="round"/>
-                </g>
-                <!-- center dot -->
-                <circle cx="140" cy="148" r="4" fill="black"/>
-                <!-- seconds display -->
-                <text id="sw-display" x="140" y="285" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="bold" font-family="helvetica-lt-pro,sans-serif">0.0s</text>
-            </svg>
-        </div>
-
-    </div><!-- end sixth-row -->
+    </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
